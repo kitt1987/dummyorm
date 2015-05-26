@@ -74,7 +74,7 @@ User.drop(function(error) {
 	console.log('Fail to drop schema user|' + error);
 });
 
-var user = new User({ name: 'xxx'});
+var user = User.create({ name: 'xxx'});
 user.save(function(error, saved_obj) {
 	user = saved_obj;
 });
@@ -107,6 +107,10 @@ User.query({
 
 });
 
-User.dropUser(id, function(error) {
+User.dropRecord(id, function(error) {
 
+});
+
+User.dropRecord(function(error) {
+	// Drop all records
 });

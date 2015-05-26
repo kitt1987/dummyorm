@@ -1,0 +1,17 @@
+{
+  "name": "ormhelper.js",
+  "version": "1.0.0",
+  "description": "ORM for umhelper.js",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node test"
+  },
+  "keywords": [
+    "ORM"
+  ],
+  "author": "KH",
+  "license": "ISC"
+}
