@@ -92,7 +92,7 @@ user.drop(function(error) {
 user.update(Profile, {
 	phone: 123456789,
 	addr: 'Road'
-}}, function(error) {
+}, function(error) {
 	console.log('Fail to update object|' + error);
 });
 
