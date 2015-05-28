@@ -1,13 +1,15 @@
 'use strict'
 
 var ormhelper = require('ormhelper');
+var async = require('async');
 
 var orm = ormhelper();
 
-var lowLevel = 'mysql', highLevel = 'redis';
+function setEngines(cb) {
+	var lowLevel = 'mysql',
+		highLevel = 'redis';
 
-orm.setEngine(
-	{
+	orm.setEngine({
 		id: lowLevel,
 		option: {
 			server: 'localhost',
@@ -23,63 +25,110 @@ orm.setEngine(
 			user: 'root',
 			password: 'root',
 		}
+	}).connect(function(error) {
+		if (error) {
+			cb(error, null);
+			return;
+		}
+
+		cb(null, null);
+	});
+}
+
+function createUseSchema(cb) {
+	var user = orm.define('table_name_user', {
+		// ID, create_ts and update_ts will be default columns
+		id: {
+			type: 'integer',
+			byte_len: 32,
+			key: true,
+			auto_increment: true,
+			not_null: true
+		},
+		name: {
+			type: 'string',
+			text_len: 32,
+			not_null: true
+		}
 	});
 
-// Sync & Check
-var User = orm.define('table_name_user',
-		{
-			// ID, create_ts and update_ts will be default columns
-			id: {
-				type: 'integer',
-				byte_len: 32,
-				key: true,
-				auto_increment: true,
-				not_null: true
-			},
-			name: {
-				type: 'string',
-				text_len: 32,
-				not_null: true
-			}
-		}, function cb(error) {
-			console.log('Fail to define schema user|' + error);
+	user.sync(function(error) {
+		if (error) {
+			cb(error, null);
+			return;
 		}
-	);
 
-var Profile = orm.define('table_name_profile',
-		{
-			id: {
-				type: 'integer',
-				key: true,
-				auto_increment: true,
-				not_null: true
-			},
-			name: {
-				type: 'string',
-				not_null: true
-			}
-		}, {
-			belongs_to: User,
-			no_l2: true
-		}, function cb(error) {
-			console.log('Fail to define schema user|' + error);
+		cb(null, user);
+	});
+}
+
+function createProfileSchema(cb) {
+	var profile = orm.define('table_name_profile', {
+		id: {
+			type: 'integer',
+			key: true,
+			auto_increment: true,
+			not_null: true
+		},
+		name: {
+			type: 'string',
+			not_null: true
 		}
-	);
+	}).set({
+		belongs_to: User,
+		no_l2: true
+	});
 
-User.buildIndex([User.id, User.name], function(error) {
-	// ...
+	profile.sync(function(error) {
+		if (error) {
+			cb(error, null);
+			return;
+		}
+
+		cb(null, profile);
+	});
+}
+
+var User, Profile;
+
+async.series({
+	t1: setEngines,
+	user: createUseSchema,
+	profile: createProfileSchema
+}, function(error, schemas) {
+	if (error)
+		throw error;
+	User = schemas.user;
+	Profile = schemas.profile;
 });
 
-User.drop(function(error) {
-	console.log('Fail to drop schema user|' + error);
+function buildIndeciesForUser(cb) {
+	User.buildIndex([User.id, User.name], function(error) {
+		if (error) {
+			cb(error, null);
+			return;
+		}
+
+		cb(null, null);
+	});
+}
+
+async.series([buildIndeciesForUser], function(error, results) {
+	if (error)
+		throw error;
 });
 
-var user = User.create({ name: 'xxx'});
+var user = User.create({
+	name: 'xxx'
+});
+
 user.save(function(error, saved_obj) {
 	user = saved_obj;
 });
 
-user.update({ name: 'yyy'}, function(error) {
+user.update({
+	name: 'yyy'
+}, function(error) {
 	console.log('Fail to update object|' + error);
 });
 
@@ -96,16 +145,17 @@ user.update(Profile, {
 	console.log('Fail to update object|' + error);
 });
 
-User.query({
-	where:
-	limit:
-	group_by:
-	order_by:
-}, {
-	just_l2: true
-}, function(error, objs) {
+User.query
+	.where('condition')
+	.offset(1)
+	.limit(10)
+	.group_by('id')
+	.order_by('name')
+	.desc()
+	.toplevelOnly()
+	.exec(function(error, objs) {
 
-});
+	});
 
 User.dropRecord(id, function(error) {
 
@@ -113,4 +163,8 @@ User.dropRecord(id, function(error) {
 
 User.dropRecord(function(error) {
 	// Drop all records
+});
+
+User.drop(function(error) {
+	console.log('Fail to drop schema user|' + error);
 });
