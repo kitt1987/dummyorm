@@ -149,10 +149,9 @@ User.query
 	.where('condition')
 	.offset(1)
 	.limit(10)
-	.group_by('id')
-	.order_by('name')
-	.desc()
-	.toplevelOnly()
+	.groupBy('id')
+	.orderBy('name')
+	.topLevelOnly()
 	.exec(function(error, objs) {
 
 	});
