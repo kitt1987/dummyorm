@@ -1,3 +1,3 @@
 'use strict'
 
-exports = module.exports = require('lib/orm');
+exports = module.exports = require('./lib/orm');
