@@ -145,13 +145,19 @@ user.update(Profile, {
 	console.log('Fail to update object|' + error);
 });
 
-User.query
+User.query()
 	.where('condition')
 	.offset(1)
 	.limit(10)
 	.groupBy('id')
 	.orderBy('name')
 	.topLevelOnly()
+	.exec(function(error, objs) {
+
+	});
+
+User.query()
+	.id(10)
 	.exec(function(error, objs) {
 
 	});
