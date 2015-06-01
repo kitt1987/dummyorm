@@ -27,17 +27,19 @@ module.exports = {
 		})
 	},
 	defineASchema: function(test) {
-		var user = this.orm.define(this.table_name,
-			{
-				// FIXME test all data types
-				name: {
-					type: 'string',
-					text_len: 32,
-					not_null: true
-				}
-			});
-		test.expect(1);
-		test.ok(true, 'Should go');
-		test.done();
+		var user = this.orm.define(this.table_name, {
+			name: {
+				type: ormhelper.String,
+				len: 32,
+				not_null: true
+			},
+			age: {
+				type: ormhelper.TinyInteger,
+			}
+		});
+		user.sync(function(err) {
+			test.ok(!err);
+			test.done();
+		});
 	}
 }
