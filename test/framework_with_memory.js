@@ -39,6 +39,20 @@ module.exports = {
 		});
 		user.sync(function(err) {
 			test.ok(!err);
+			var user_a = user.create({
+				name: 'Sakura',
+				age: 22
+			});
+
+			test.equal(user_a.name, 'Sakura');
+			test.equal(user_a.age, 22);
+
+			user_a.save(function(err, saved) {
+				test.ok(!err);
+				test.equal(user_a.name, saved.name);
+				test.equal(user_a.age, saved.age);
+			});
+
 			test.done();
 		});
 	}
