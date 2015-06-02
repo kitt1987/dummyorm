@@ -1,140 +1,61 @@
 'use strict'
 
-var ormhelper = require('ormhelper');
-var async = require('async');
+var ormcache = require('ormcache');
 
-var orm = ormhelper();
+ormcache.useMemoryCache();
+ormcache.useRedisCache({
+	server: 'ip:port'
+}, function(err) {
 
-function setEngines(cb) {
-	var lowLevel = 'mysql',
-		highLevel = 'redis';
-
-	orm.setEngine({
-		id: lowLevel,
-		option: {
-			server: 'localhost',
-			port: 3306,
-			user: 'root',
-			password: 'root',
-		}
-	}).setEngine({
-		id: highLevel,
-		option: {
-			server: 'localhost',
-			port: 3306,
-			user: 'root',
-			password: 'root',
-		}
-	}).connect(function(error) {
-		if (error) {
-			cb(error, null);
-			return;
-		}
-
-		cb(null, null);
-	});
-}
-
-function createUseSchema(cb) {
-	var user = orm.define('table_name_user', {
-		// ID, create_ts and update_ts will be default columns
-		id: {
-			type: 'integer',
-			byte_len: 32,
-			key: true,
-			auto_increment: true,
-			not_null: true
-		},
-		name: {
-			type: 'string',
-			text_len: 32,
-			not_null: true
-		}
-	});
-
-	user.sync(function(error) {
-		if (error) {
-			cb(error, null);
-			return;
-		}
-
-		cb(null, user);
-	});
-}
-
-function createProfileSchema(cb) {
-	var profile = orm.define('table_name_profile', {
-		id: {
-			type: 'integer',
-			key: true,
-			auto_increment: true,
-			not_null: true
-		},
-		name: {
-			type: 'string',
-			not_null: true
-		}
-	}).set({
-		belongs_to: User,
-		no_l2: true
-	});
-
-	profile.sync(function(error) {
-		if (error) {
-			cb(error, null);
-			return;
-		}
-
-		cb(null, profile);
-	});
-}
-
-var User, Profile;
-
-async.series({
-	t1: setEngines,
-	user: createUseSchema,
-	profile: createProfileSchema
-}, function(error, schemas) {
-	if (error)
-		throw error;
-	User = schemas.user;
-	Profile = schemas.profile;
 });
 
-function buildIndeciesForUser(cb) {
-	User.buildIndex([User.id, User.name], function(error) {
-		if (error) {
-			cb(error, null);
-			return;
-		}
+ormcache.useMysql({
+	server: 'ip:port',
+	user: 'user:password'
+}, function(err) {
 
-		cb(null, null);
-	});
-}
+});
 
-async.series([buildIndeciesForUser], function(error, results) {
-	if (error)
-		throw error;
+var User = ormcache.define('table_name_user', {
+	// ID, create_ts and update_ts will be default columns
+	name: {
+		type: 'string',
+		text_len: 32,
+		not_null: true
+	}
+});
+
+User.sync(function(error) {
+});
+
+var Profile = ormcache.define('table_name_profile', {
+	name: {
+		type: 'string',
+		not_null: true
+	}
+}).set({
+	belongs_to: User
+});
+
+Profile.sync(function(error) {
+});
+
+User.buildIndex([User.id, User.name], function(error) {
 });
 
 var user = User.create({
 	name: 'xxx'
 });
 
-user.save(function(error, saved_obj) {
-	user = saved_obj;
+ormcache.save(key, user, function(error, saved_obj) {
 });
 
-user.update({
+ormcache.update(key, user, {
 	name: 'yyy'
-}, function(error) {
-	console.log('Fail to update object|' + error);
+}, function(error, new_obj) {
 });
 
-// In transaction with profile
-user.drop(function(error) {
-	console.log('Fail to drop object|' + error);
+ormcache.drop(key, user, function(error) {
 });
 
 // Update or create profile
@@ -145,31 +66,16 @@ user.update(Profile, {
 	console.log('Fail to update object|' + error);
 });
 
-User.query()
+ormcache.get(key, function(err, obj)) {
+
+}
+
+ormcache.query()
 	.where('condition')
 	.offset(1)
 	.limit(10)
 	.groupBy('id')
 	.orderBy('name')
-	.topLevelOnly()
-	.exec(function(error, objs) {
+	.exec(function(err, objs) {
 
 	});
-
-User.query()
-	.id(10)
-	.exec(function(error, objs) {
-
-	});
-
-User.dropRecord(id, function(error) {
-
-});
-
-User.dropRecord(function(error) {
-	// Drop all records
-});
-
-User.drop(function(error) {
-	console.log('Fail to drop schema user|' + error);
-});
