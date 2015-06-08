@@ -1,8 +1,7 @@
 'use strict'
-var ormcache = require('ormcache');
 exports = module.exports = {}
 exports.lastStep = '';
-exports.run = function(schemas, cb) {
+exports.run = function(ormcache, cb) {
 	// FIXME create or modify schema here and pass the cb to orm 		
 	// You could access each schema by calling schemas.schema_talbe_name.
 	var User = ormcache.define('User', {
@@ -13,6 +12,7 @@ exports.run = function(schemas, cb) {
 		}
 	});
 
-	User.buildIndex([User.id, User.name]);
-	cb(User);
+	User.buildIndex([User.id, User.name], function(err) {
+		cb(err, User);
+	});
 }
