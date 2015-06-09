@@ -59,8 +59,8 @@ function calcStep(box) {
 	ss.setExported();
 	ss.addMember('lastStep', '\'' + last_step + '\'');
 	ss.addMember('run', 'function(schemas, cb) { \
-		// FIXME create or modify schema here and pass the cb to orm \
-		\n\t\t// You could access each schema by calling schemas.schema_talbe_name. \
+		// FIXME create or modify schema here and pass the cb to orm\
+		\n\t\t// You could access each schema by calling ormcache.schemas[schema_talbe_name].\
 	}');
 	return ss.text();
 }

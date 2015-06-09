@@ -12,7 +12,5 @@ exports.run = function(ormcache, cb) {
 		}
 	});
 
-	User.buildIndex([User.id, User.name], function(err) {
-		cb(err, User);
-	});
+	cb(User);
 }

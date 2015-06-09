@@ -33,9 +33,8 @@ module.exports = {
 			cb();
 		})
 	},
-	defineASchema: function(test) {
+	loadNormalDefinitionAndIndexBuilding: function(test) {
 		test.ok(this.orm.loadSteps);
-		console.log('process:%s', process.cwd());
 		var stepBox = path.join(process.cwd(), './test/steps');
 		this.orm.loadSteps(stepBox, function(err) {
 			test.ok(!err);
