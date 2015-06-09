@@ -56,6 +56,7 @@ function calcStep(box) {
 	}
 
 	var ss = new StepScript();
+	ss.addRequired(orm, 'ormcache');
 	ss.setExported();
 	ss.addMember('lastStep', '\'' + last_step + '\'');
 	ss.addMember('run', 'function(schemas, cb) { \
