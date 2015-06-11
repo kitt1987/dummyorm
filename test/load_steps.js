@@ -37,7 +37,7 @@ module.exports = {
 	},
 	loadNormalDefinitionAndIndexBuilding: function(test) {
 		test.ok(this.orm.loadSteps);
-		var stepBox = path.join(process.cwd(), './test/steps');
+		var stepBox = path.join(process.cwd(), './test/test_db');
 		this.orm.loadSteps(stepBox, function(err) {
 			test.ok(!err);
 			test.done();

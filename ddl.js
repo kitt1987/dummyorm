@@ -48,8 +48,8 @@ StepScript.prototype.text = function() {
 	});
 }
 
-function calcStep(box) {
-	var steps = fs.readdirSync(box);
+function calcStep(database) {
+	var steps = fs.readdirSync(database);
 	var last_step = '';
 	if (steps.length > 0) {
 		last_step = steps[steps.length - 1];
@@ -67,12 +67,12 @@ function calcStep(box) {
 }
 
 (function() {
-	var box = process.argv[2];
-	if (!box)
+	var database = process.argv[2];
+	if (!database)
 		throw Error('You should set a folder to save all steps at least');
 
-	if (!fs.existsSync(box))
-		fs.mkdirSync(box);
+	if (!fs.existsSync(database))
+		fs.mkdirSync(database);
 
 	var note = process.argv[3];
 	if (note) {
@@ -81,11 +81,11 @@ function calcStep(box) {
 		var footprint = '' + Date.now() + '.js';
 	}
 
-	var step = path.join(box, footprint);
+	var step = path.join(database, footprint);
 	if (fs.existsSync(step))
 		throw Error('You or some others save the same steps or you put this command in a loop');
 
-	fs.writeFile(step, calcStep(box), function(err) {
+	fs.writeFile(step, calcStep(database), function(err) {
 		if (err)
 			throw err;
 	});
