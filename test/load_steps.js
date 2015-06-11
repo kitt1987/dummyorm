@@ -18,7 +18,8 @@ module.exports = {
 				host: 'localhost',
 				port: 3306,
 				user: 'root',
-				password: '0000'
+				password: '0000',
+				debug: true
 			},
 			function(err) {
 				if (err) {
