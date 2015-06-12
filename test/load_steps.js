@@ -2,9 +2,10 @@
 
 var ormhelper = require('../');
 var path = require('path');
+var async = require('async');
 
 process.on('uncaughtException', function(err) {
-  console.error(err.stack);
+	console.error(err.stack);
 });
 
 module.exports = {
@@ -15,8 +16,8 @@ module.exports = {
 			size: '256M'
 		});
 		this.orm.useMysql({
-				host: 'localhost',
-				port: 3306,
+				host: '192.168.99.100',
+				port: 32768,
 				user: 'root',
 				password: '0000',
 				debug: true
@@ -30,11 +31,12 @@ module.exports = {
 			});
 	},
 	tearDown: function(cb) {
-		this.orm.disconnect(function(err) {
-			if (err)
-				throw err;
-			cb();
-		})
+		async.series([
+				this.orm.drop.bind(this.orm, this.orm.schemas.User),
+				this.orm.dropDB.bind(this.orm, 'test_db'),
+				this.orm.disconnect.bind(this.orm)
+			],
+			cb);
 	},
 	loadNormalDefinitionAndIndexBuilding: function(test) {
 		test.ok(this.orm.loadSteps);
