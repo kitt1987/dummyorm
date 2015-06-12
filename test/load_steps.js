@@ -12,6 +12,7 @@ module.exports = {
 	setUp: function(cb) {
 		this.table_name = 'user';
 		this.orm = ormhelper();
+		this.orm.enableCliLog();
 		this.orm.useMemoryCache({
 			size: '256M'
 		});
@@ -19,8 +20,7 @@ module.exports = {
 				host: '192.168.99.100',
 				port: 32768,
 				user: 'root',
-				password: '0000',
-				debug: true
+				password: '0000'
 			},
 			function(err) {
 				if (err) {
