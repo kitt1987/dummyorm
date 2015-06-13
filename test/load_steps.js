@@ -20,7 +20,9 @@ module.exports = {
 				host: '192.168.99.100',
 				port: 32768,
 				user: 'root',
-				password: '0000'
+				password: '0000',
+				connectionLimit: 2,
+				queueLimit: 256
 			},
 			function(err) {
 				if (err) {
