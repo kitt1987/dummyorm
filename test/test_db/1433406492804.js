@@ -8,7 +8,7 @@ exports.run = function(ormcache, cb) {
 	var User = ormcache.schemas['User'];
 	User.buildIndex({
 		name: 'iId_Name',
-		column: [User.id, User.name],
+		column: [User.id, User.uid],
 		type: orm.BtreeIndex
 	});
 	cb(User);

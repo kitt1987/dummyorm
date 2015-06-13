@@ -6,14 +6,15 @@ exports.run = function(ormcache, cb) {
 	// FIXME create or modify schema here and pass the cb to orm 		
 	// You could access each schema by calling schemas.schema_talbe_name.
 	var User = ormcache.define('User', [{
-		name: 'name',
+		name: 'uid',
 		type: orm.String,
-		len: 32,
-		not_null: true
+		len: 36,
+		notNull: true
 	}, {
-		name: 'age',
-		type: orm.SmallInteger,
-		not_null: true
+		name: 'pw',
+		type: orm.String,
+		len: 36,
+		notNull: true
 	}]);
 
 	cb(User);

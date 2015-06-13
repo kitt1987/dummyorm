@@ -5,6 +5,7 @@ var path = require('path');
 var util = require('util');
 var _ = require('lodash');
 var async = require('async');
+var colors = require('colors');
 
 function StepScript() {
 	this.strict = '\'use strict\'';
@@ -56,39 +57,43 @@ function calcStep(database) {
 	}
 
 	var ss = new StepScript();
-	ss.addRequired(orm, 'ormcache');
+	ss.addRequired('orm', 'ormcache');
 	ss.setExported();
 	ss.addMember('lastStep', '\'' + last_step + '\'');
-	ss.addMember('run', 'function(schemas, cb) { \
+	ss.addMember('run', 'function(ormcache, cb) {\
 		// FIXME create or modify schema here and pass the cb to orm\
-		\n\t\t// You could access each schema by calling ormcache.schemas[schema_talbe_name].\
+		\n\t// You could access each schema by calling ormcache.schemas[schema_talbe_name].\
 	}');
 	return ss.text();
 }
 
 (function() {
-	var database = process.argv[2];
-	if (!database)
-		throw Error('You should set a folder to save all steps at least');
+	try {
+		var database = process.argv[2];
+		if (!database)
+			throw Error('You should set a folder to save all steps at least');
 
-	if (!fs.existsSync(database))
-		fs.mkdirSync(database);
+		if (!fs.existsSync(database))
+			fs.mkdirSync(database);
 
-	var note = process.argv[3];
-	if (note) {
-		var footprint = '' + Date.now() + '-' + note + '.js';
-	} else {
-		var footprint = '' + Date.now() + '.js';
+		var note = process.argv[3];
+		if (note) {
+			var footprint = '' + Date.now() + '-' + note + '.js';
+		} else {
+			var footprint = '' + Date.now() + '.js';
+		}
+
+		var step = path.join(database, footprint);
+		if (fs.existsSync(step))
+			throw Error('You or some others save the same steps or you put this command in a loop');
+
+		fs.writeFile(step, calcStep(database), function(err) {
+			if (err)
+				throw err;
+		});
+
+		console.info(colors.green(footprint + ' is created'));
+	} catch (err) {
+		console.info(colors.red(err));
 	}
-
-	var step = path.join(database, footprint);
-	if (fs.existsSync(step))
-		throw Error('You or some others save the same steps or you put this command in a loop');
-
-	fs.writeFile(step, calcStep(database), function(err) {
-		if (err)
-			throw err;
-	});
-
-	console.info('%s is created', footprint);
 })();
