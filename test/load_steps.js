@@ -21,6 +21,8 @@ module.exports = {
 				port: 32768,
 				user: 'root',
 				password: '0000',
+				connectTimeout: 1000,
+				acquireTimeout: 1000,
 				connectionLimit: 2,
 				queueLimit: 256,
 				debug: true
