@@ -22,7 +22,8 @@ module.exports = {
 				user: 'root',
 				password: '0000',
 				connectionLimit: 2,
-				queueLimit: 256
+				queueLimit: 256,
+				debug: true
 			},
 			function(err) {
 				if (err) {

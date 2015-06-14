@@ -16,5 +16,8 @@ exports.run = function(ormcache, cb) {
 		notNull: true
 	}]);
 
-	cb(Profile);
+	var User = ormcache.schemas['User'];
+	User.contains(Profile);
+
+	cb([Profile, User]);
 }
