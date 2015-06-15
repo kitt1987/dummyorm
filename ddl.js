@@ -6,6 +6,7 @@ var util = require('util');
 var _ = require('lodash');
 var async = require('async');
 var colors = require('colors');
+var multi = require('multiline');
 
 function StepScript() {
 	this.strict = '\'use strict\'';
@@ -60,10 +61,14 @@ function calcStep(database) {
 	ss.addRequired('orm', 'ormcache');
 	ss.setExported();
 	ss.addMember('lastStep', '\'' + last_step + '\'');
-	ss.addMember('run', 'function(ormcache, cb) {\
-		// FIXME create or modify schema here and pass the cb to orm\
-		\n\t// You could access each schema by calling ormcache.schemas[schema_talbe_name].\
-	}');
+	ss.addMember('run', multi.stripIndent(function() {
+		/*
+				function(ormcache, cb) {
+					// FIXME create or modify schema here and pass the cb to orm\
+					// You could access each schema by calling ormcache.schemas[schema_talbe_name].\
+				}
+			*/
+	}));
 	return ss.text();
 }
 
