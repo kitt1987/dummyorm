@@ -3,6 +3,8 @@
 var ormhelper = require('../');
 var path = require('path');
 var async = require('async');
+var fs = require('fs');
+var _ = require('lodash');
 
 process.on('uncaughtException', function(err) {
 	console.error(err.stack);
@@ -24,8 +26,7 @@ module.exports = {
 				connectTimeout: 1000,
 				acquireTimeout: 1000,
 				connectionLimit: 1,
-				queueLimit: 256,
-				debug: true
+				queueLimit: 256
 			},
 			function(err) {
 				if (err) {
@@ -37,23 +38,27 @@ module.exports = {
 	},
 	tearDown: function(cb) {
 		var done = [];
-		if (this.orm.schemas.User)
-			done.push(this.orm.drop.bind(this.orm, this.orm.schemas.User));
+		// if (this.orm.schemas.User)
+		// 	done.push(this.orm.drop.bind(this.orm, this.orm.schemas.User));
 
-		if (this.orm.schemas.Profile)
-			this.orm.drop.bind(this.orm, this.orm.schemas.Profile);
+		// if (this.orm.schemas.Profile)
+		// 	this.orm.drop.bind(this.orm, this.orm.schemas.Profile);
 
-		done.push(this.orm.dropDB.bind(this.orm, 'test_db'));
+		// done.push(this.orm.dropDB.bind(this.orm, 'test_db'));
 		done.push(this.orm.disconnect.bind(this.orm));
 		async.series(done, cb);
 	},
-	loadNormalDefinitionAndIndexBuilding: function(test) {
+	loading: function(test) {
 		test.ok(this.orm.loadSteps);
 		var stepBox = path.join(process.cwd(), './test/test_db');
 		this.orm.loadSteps(stepBox, function(err) {
-			test.ok(!err);
-			test.done();
-		});
+			test.ok(!err, err);
+			this.orm.currentStep(function(err, step) {
+				var steps = fs.readdirSync(stepBox);
+				test.equal(step, _(steps[steps.length - 1].slice(0, 13)).value());
+				test.done();
+			});
+		}.bind(this));
 		// var user = this.orm.define(this.table_name, {
 		// 	name: {
 		// 		type: ormhelper.String,
