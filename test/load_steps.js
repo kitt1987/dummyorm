@@ -51,24 +51,24 @@ module.exports = {
 	loading: function(test) {
 		test.ok(this.orm.loadSteps);
 		var stepBox = path.join(process.cwd(), './test/test_db');
+		var self = this;
 		this.orm.loadSteps(stepBox, function(err) {
 			test.ok(!err, err);
-			this.orm.currentStep(function(err, step) {
+			self.orm.currentStep(function(err, step) {
 				var steps = fs.readdirSync(stepBox);
 				test.equal(step, _(steps[steps.length - 1].slice(0, 13)).value());
+				var user = self.orm.schemas.User.create({
+					uid: 'unique_name'
+				});
+				test.equal(user.uid, 'unique_name');
+				user.set({
+					pw: 'password'
+				});
+				test.equal(user.pw, 'password');
 				test.done();
 			});
-		}.bind(this));
-		// var user = this.orm.define(this.table_name, {
-		// 	name: {
-		// 		type: ormhelper.String,
-		// 		len: 32,
-		// 		not_null: true
-		// 	},
-		// 	age: {
-		// 		type: ormhelper.TinyInteger,
-		// 	}
-		// });
+		});
+
 		// user.sync(function(err) {
 		// 	test.ok(!err);
 		// 	var user_a = user.create({
