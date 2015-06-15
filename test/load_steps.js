@@ -17,13 +17,13 @@ module.exports = {
 			size: '256M'
 		});
 		this.orm.useMysql({
-				host: '192.168.99.100',
-				port: 32768,
+				host: 'localhost',
+				port: 3306,
 				user: 'root',
 				password: '0000',
 				connectTimeout: 1000,
 				acquireTimeout: 1000,
-				connectionLimit: 2,
+				connectionLimit: 1,
 				queueLimit: 256,
 				debug: true
 			},
@@ -36,12 +36,16 @@ module.exports = {
 			});
 	},
 	tearDown: function(cb) {
-		async.series([
-				this.orm.drop.bind(this.orm, this.orm.schemas.User),
-				this.orm.dropDB.bind(this.orm, 'test_db'),
-				this.orm.disconnect.bind(this.orm)
-			],
-			cb);
+		var done = [];
+		if (this.orm.schemas.User)
+			done.push(this.orm.drop.bind(this.orm, this.orm.schemas.User));
+
+		if (this.orm.schemas.Profile)
+			this.orm.drop.bind(this.orm, this.orm.schemas.Profile);
+
+		done.push(this.orm.dropDB.bind(this.orm, 'test_db'));
+		done.push(this.orm.disconnect.bind(this.orm));
+		async.series(done, cb);
 	},
 	loadNormalDefinitionAndIndexBuilding: function(test) {
 		test.ok(this.orm.loadSteps);
