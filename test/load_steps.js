@@ -5,6 +5,7 @@ var path = require('path');
 var async = require('async');
 var fs = require('fs');
 var _ = require('lodash');
+var util = require('util');
 
 process.on('uncaughtException', function(err) {
 	console.error(err.stack);
@@ -28,7 +29,8 @@ module.exports = {
 				connectTimeout: 1000,
 				acquireTimeout: 1000,
 				connectionLimit: 2,
-				queueLimit: 256
+				queueLimit: 256,
+				debug: true
 			},
 			function(err) {
 				if (err) {
@@ -95,11 +97,69 @@ module.exports = {
 			pw: 'new_password'
 		});
 
+		var u2 = this.orm.schemas.User.create({
+			uid: 'u2',
+			pw: 'u2_password'
+		});
+
 		this.orm.save('key', user, function(err) {
 			test.ok(!err);
-			self.orm.query(user.schema).exec(function(err, result) {
-				test.ok(!err);
-				test.done();
+			self.orm.save('u2', u2, function(err) {
+				self.orm.query(user.schema).exec(function(err, result) {
+					test.ok(!err);
+					console.log(util.inspect(result))
+					test.equal(2, result.length);
+					var numCols1 = _.keys(result[0]).length
+					var numCols2 = _.keys(result[1]).length
+					test.equal(numCols1, numCols2);
+					test.done();
+				});
+			});
+		});
+	},
+	queryColumns: function(test) {
+		var self = this;
+		var user = this.orm.schemas.User.create({
+			uid: 'new_name',
+			pw: 'new_password'
+		});
+
+		this.orm.save('key', user, function(err) {
+			test.ok(!err);
+			self.orm.query()
+				.select(self.orm.schemas.User.id, self.orm.schemas.User.pw)
+				.exec(function(err, result) {
+					test.ok(!err);
+					console.log(util.inspect(result))
+					test.equal(2, _.keys(result[0]).length);
+					test.done();
+				});
+		});
+	},
+	simpleCondition: function(test) {
+		var self = this;
+		var user = this.orm.schemas.User.create({
+			uid: 'new_name',
+			pw: 'new_password'
+		});
+
+		var u2 = this.orm.schemas.User.create({
+			uid: 'u2',
+			pw: 'u2_password'
+		});
+
+		this.orm.save('key', user, function(err) {
+			test.ok(!err);
+			self.orm.save('u2', u2, function(err) {
+				self.orm.query(user.schema)
+				.where(self.orm.condition().eq(self.orm.schemas.User.uid, u2.uid))
+				.exec(function(err, result) {
+					test.ok(!err);
+					console.log(util.inspect(result))
+					test.equal(1, result.length);
+					test.equal(u2.uid, result[0].uid);
+					test.done();
+				});
 			});
 		});
 	}
