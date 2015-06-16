@@ -39,13 +39,13 @@ module.exports = {
 	},
 	tearDown: function(cb) {
 		var done = [];
-		if (this.orm.schemas.User)
-			done.push(this.orm.drop.bind(this.orm, this.orm.schemas.User));
+		// if (this.orm.schemas.User)
+		// 	done.push(this.orm.drop.bind(this.orm, this.orm.schemas.User));
 
-		if (this.orm.schemas.Profile)
-			this.orm.drop.bind(this.orm, this.orm.schemas.Profile);
+		// if (this.orm.schemas.Profile)
+		// 	this.orm.drop.bind(this.orm, this.orm.schemas.Profile);
 
-		done.push(this.orm.dropDB.bind(this.orm, 'test_db'));
+		// done.push(this.orm.dropDB.bind(this.orm, 'test_db'));
 		done.push(this.orm.disconnect.bind(this.orm));
 		async.series(done, cb);
 	},
@@ -68,7 +68,14 @@ module.exports = {
 				test.equal(user.pw, 'password');
 				self.orm.save('some_key', user, function(err) {
 					test.ok(!err, err);
-					test.done();
+					user.set({
+						pw: 'new_password'
+					});
+					self.orm.update('some_key', user, function(err) {
+						test.equal(user.pw, 'new_password');
+						test.ok(!err, err);
+						test.done();
+					})
 				});
 			});
 		});
