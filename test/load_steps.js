@@ -12,6 +12,8 @@ process.on('uncaughtException', function(err) {
 
 module.exports = {
 	setUp: function(cb) {
+		var self = this;
+		this.stepBox = path.join(process.cwd(), './test/test_db');
 		this.table_name = 'user';
 		this.orm = ormhelper();
 		this.orm.enableCliLog();
@@ -33,10 +35,18 @@ module.exports = {
 					throw err;
 				}
 
-				cb();
+				self.orm.loadSteps(self.stepBox, function(err) {
+					if (err)
+						throw err;
+
+					cb();
+				});
 			});
 	},
 	tearDown: function(cb) {
+		if (!this.orm.schemas)
+			return;
+
 		var done = [];
 		if (this.orm.schemas.User)
 			done.push(this.orm.drop.bind(this.orm, this.orm.schemas.User));
@@ -49,56 +59,48 @@ module.exports = {
 		async.series(done, cb);
 	},
 	loading: function(test) {
-		test.ok(this.orm.loadSteps);
-		var stepBox = path.join(process.cwd(), './test/test_db');
 		var self = this;
-		this.orm.loadSteps(stepBox, function(err) {
-			test.ok(!err, err);
-			self.orm.currentStep(function(err, step) {
-				var steps = fs.readdirSync(stepBox);
-				test.equal(step, _(steps[steps.length - 1].slice(0, 13)).value());
-				var user = self.orm.schemas.User.create({
-					uid: 'unique_name'
-				});
-				test.equal(user.uid, 'unique_name');
+		this.orm.currentStep(function(err, step) {
+			test.ok(!err);
+			var steps = fs.readdirSync(self.stepBox);
+			test.equal(step, _(steps[steps.length - 1].slice(0, 13)).value());
+			var user = self.orm.schemas.User.create({
+				uid: 'unique_name'
+			});
+			test.equal(user.uid, 'unique_name');
+			user.set({
+				pw: 'password'
+			});
+			test.equal(user.pw, 'password');
+			self.orm.save('some_key', user, function(err) {
+				test.ok(!err, err);
 				user.set({
-					pw: 'password'
+					pw: 'new_password'
 				});
-				test.equal(user.pw, 'password');
-				self.orm.save('some_key', user, function(err) {
+				self.orm.update('some_key', user, function(err) {
 					test.ok(!err, err);
-					user.set({
-						pw: 'new_password'
-					});
-					self.orm.update('some_key', user, function(err) {
+					test.equal(user.pw, 'new_password');
+					self.orm.del('some_key', user, function(err) {
 						test.ok(!err, err);
-						test.equal(user.pw, 'new_password');
-						self.orm.del('some_key', user, function(err) {
-							test.ok(!err, err);
-							test.done();
-						});
-					})
-				});
+						test.done();
+					});
+				})
 			});
 		});
+	},
+	simpleQuery: function(test) {
+		var self = this;
+		var user = this.orm.schemas.User.create({
+			uid: 'new_name',
+			pw: 'new_password'
+		});
 
-		// user.sync(function(err) {
-		// 	test.ok(!err);
-		// 	var user_a = user.create({
-		// 		name: 'Sakura',
-		// 		age: 22
-		// 	});
-
-		// 	test.equal(user_a.name, 'Sakura');
-		// 	test.equal(user_a.age, 22);
-
-		// 	user_a.save(function(err, saved) {
-		// 		test.ok(!err);
-		// 		test.equal(user_a.name, saved.name);
-		// 		test.equal(user_a.age, saved.age);
-		// 	});
-
-		// 	test.done();
-		// });
+		this.orm.save('key', user, function(err) {
+			test.ok(!err);
+			self.orm.query(user.schema).exec(function(err, result) {
+				test.ok(!err);
+				test.done();
+			});
+		});
 	}
 }
