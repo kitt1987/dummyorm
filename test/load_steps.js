@@ -72,9 +72,12 @@ module.exports = {
 						pw: 'new_password'
 					});
 					self.orm.update('some_key', user, function(err) {
-						test.equal(user.pw, 'new_password');
 						test.ok(!err, err);
-						test.done();
+						test.equal(user.pw, 'new_password');
+						self.orm.del('some_key', user, function(err) {
+							test.ok(!err, err);
+							test.done();
+						});
 					})
 				});
 			});
