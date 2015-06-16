@@ -19,14 +19,15 @@ module.exports = {
 			size: '256M'
 		});
 		this.orm.useMysql({
-				host: 'localhost',
-				port: 3306,
+				host: '192.168.99.100',
+				port: 32768,
 				user: 'root',
 				password: '0000',
 				connectTimeout: 1000,
 				acquireTimeout: 1000,
 				connectionLimit: 2,
-				queueLimit: 256
+				queueLimit: 256,
+				debug: true
 			},
 			function(err) {
 				if (err) {
@@ -65,7 +66,10 @@ module.exports = {
 					pw: 'password'
 				});
 				test.equal(user.pw, 'password');
-				test.done();
+				self.orm.save('some_key', user, function(err) {
+					test.ok(!err, err);
+					test.done();
+				});
 			});
 		});
 
