@@ -162,5 +162,34 @@ module.exports = {
 				});
 			});
 		});
+	},
+	logicCondition: function(test) {
+		var self = this;
+		var user = this.orm.schemas.User.create({
+			uid: 'u2',
+			pw: 'password'
+		});
+
+		var u2 = this.orm.schemas.User.create({
+			uid: 'u2',
+			pw: 'new_password'
+		});
+
+		this.orm.save('key', user, function(err) {
+			test.ok(!err);
+			self.orm.save('u2', u2, function(err) {
+				self.orm.query(user.schema)
+				.where(self.orm.condition().eq(self.orm.schemas.User.uid, u2.uid)
+					.and(self.orm.condition().eq(self.orm.schemas.User.pw, u2.pw)))
+				.exec(function(err, result) {
+					test.ok(!err);
+					console.log(util.inspect(result))
+					test.equal(1, result.length);
+					test.equal(u2.uid, result[0].uid);
+					test.equal(u2.pw, result[0].pw);
+					test.done();
+				});
+			});
+		});
 	}
 }
