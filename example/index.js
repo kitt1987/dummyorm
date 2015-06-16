@@ -13,7 +13,6 @@ ormcache.useMysql({
 }, function(err) {});
 
 var User = ormcache.define('table_name_user', {
-	// ID, update_ts will be default columns
 	name: {
 		type: 'string',
 		text_len: 32,
@@ -57,12 +56,15 @@ ormcache.transaction([
 	}
 ], function(err) {});
 
+Query.condition().and(Condition.eq(User.id, 1), Condition.gt(Profile.id, User))
+
 ormcache.query()
-	.where('condition')
+	.select()
+	.where(User.id)
 	.offset(1)
 	.limit(10)
-	.groupBy('id')
-	.orderBy('name')
+	.groupBy(User.id)
+	.orderBy(User.uid)
 	.exec(function(err, objs) {
 
 	});

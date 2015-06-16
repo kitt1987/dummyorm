@@ -26,8 +26,7 @@ module.exports = {
 				connectTimeout: 1000,
 				acquireTimeout: 1000,
 				connectionLimit: 2,
-				queueLimit: 256,
-				debug: true
+				queueLimit: 256
 			},
 			function(err) {
 				if (err) {
@@ -39,13 +38,13 @@ module.exports = {
 	},
 	tearDown: function(cb) {
 		var done = [];
-		// if (this.orm.schemas.User)
-		// 	done.push(this.orm.drop.bind(this.orm, this.orm.schemas.User));
+		if (this.orm.schemas.User)
+			done.push(this.orm.drop.bind(this.orm, this.orm.schemas.User));
 
-		// if (this.orm.schemas.Profile)
-		// 	this.orm.drop.bind(this.orm, this.orm.schemas.Profile);
+		if (this.orm.schemas.Profile)
+			this.orm.drop.bind(this.orm, this.orm.schemas.Profile);
 
-		// done.push(this.orm.dropDB.bind(this.orm, 'test_db'));
+		done.push(this.orm.dropDB.bind(this.orm, 'test_db'));
 		done.push(this.orm.disconnect.bind(this.orm));
 		async.series(done, cb);
 	},
