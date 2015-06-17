@@ -18,8 +18,10 @@ module.exports = {
 		this.table_name = 'user';
 		this.orm = ormhelper();
 		this.orm.enableCliLog();
-		this.orm.useMemoryCache({
-			size: '256M'
+		this.orm.useRedisCache({
+			host: '192.168.99.100',
+			port: 32769,
+			family: 4
 		});
 		this.orm.useMysql({
 				host: '192.168.99.100',
@@ -29,8 +31,7 @@ module.exports = {
 				connectTimeout: 1000,
 				acquireTimeout: 1000,
 				connectionLimit: 2,
-				queueLimit: 256,
-				debug: true
+				queueLimit: 256
 			},
 			function(err) {
 				if (err) {
@@ -189,6 +190,23 @@ module.exports = {
 					test.equal(u2.pw, result[0].pw);
 					test.done();
 				});
+			});
+		});
+	},
+	getCache: function(test) {
+		var self = this;
+		var user = this.orm.schemas.User.create({
+			uid: 'u2',
+			pw: 'password'
+		});
+
+		this.orm.save('key', user, function(err) {
+			test.ok(!err, err);
+			var userDump = user.dump();
+			self.orm.get('key', function(err, r) {
+				test.ok(!err, err);
+				test.equal(userDump, r);
+				test.done();
 			});
 		});
 	}
