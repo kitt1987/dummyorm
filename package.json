@@ -1,10 +1,10 @@
 {
   "name": "ormcache.js",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "ORM for umhelper",
   "main": "index.js",
   "directories": {
-    "example": "example",
+    "lib": "lib",
     "test": "test"
   },
   "scripts": {
@@ -14,8 +14,8 @@
     "type": "git",
     "url": "https://github.com/kitt1987/ormcache.js.git"
   },
-  "author": "KH",
-  "license": "ISC",
+  "author": "Kitt Hsu",
+  "license": "BSD",
   "bugs": {
     "url": "https://github.com/kitt1987/ormcache.js/issues"
   },
