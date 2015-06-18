@@ -65,6 +65,8 @@ module.exports = {
 		var self = this;
 		this.orm.currentStep(function(err, step) {
 			test.ok(!err);
+			test.ok(self.orm.schemas.Profile.address);
+			test.ok(self.orm.schemas.Profile.pno);
 			var steps = fs.readdirSync(self.stepBox);
 			test.equal(step, _(steps[steps.length - 1].slice(0, 13)).value());
 			var user = self.orm.schemas.User.create({
