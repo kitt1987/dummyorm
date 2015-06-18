@@ -58,7 +58,7 @@ function calcStep(database) {
 	}
 
 	var ss = new StepScript();
-	ss.addRequired('orm', 'ormcache');
+	ss.addRequired('orm', 'ormcache.js');
 	ss.setExported();
 	ss.addMember('lastStep', '\'' + last_step + '\'');
 	ss.addMember('run', multi.stripIndent(function() {
