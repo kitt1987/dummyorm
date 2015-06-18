@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/kitt1987/ormhelper.git"
+    "url": "https://github.com/kitt1987/ormcache.js.git"
   },
   "author": "KH",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/kitt1987/ormhelper/issues"
+    "url": "https://github.com/kitt1987/ormcache.js/issues"
   },
-  "homepage": "https://github.com/kitt1987/ormhelper",
+  "homepage": "https://github.com/kitt1987/ormcache.js",
   "developDependencies": {
     "nodeunit": "^0.9.1"
   },
