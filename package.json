@@ -1,5 +1,5 @@
 {
-  "name": "ormhelper.js",
+  "name": "ormcache.js",
   "version": "1.0.0",
   "description": "ORM for umhelper",
   "main": "index.js",
