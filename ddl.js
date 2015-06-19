@@ -64,8 +64,8 @@ function calcStep(database) {
 	ss.addMember('run', multi.stripIndent(function() {
 		/*
 				function(ormcache, cb) {
-					// FIXME create or modify schema here and pass the cb to orm\
-					// You could access each schema by calling ormcache.schemas[schema_talbe_name].\
+					// FIXME create or modify schema here and pass the cb to orm
+					// You could access each schema by calling ormcache.schemas[schema_talbe_name].
 				}
 			*/
 	}));
