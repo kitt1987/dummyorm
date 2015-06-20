@@ -204,10 +204,11 @@ module.exports = {
 
 		this.orm.save('key', user, function(err) {
 			test.ok(!err, err);
-			var userDump = user.dump();
 			self.orm.get('key', function(err, r) {
 				test.ok(!err, err);
-				test.equal(userDump, r);
+				var obj = JSON.parse(r);
+				test.equal(user.uid, obj.uid);
+				test.equal(user.pw, obj.pw);
 				test.done();
 			});
 		});
