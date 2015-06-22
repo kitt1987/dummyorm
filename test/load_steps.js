@@ -14,7 +14,10 @@ process.on('uncaughtException', function(err) {
 module.exports = {
 	setUp: function(cb) {
 		var self = this;
-		this.stepBox = path.join(process.cwd(), './test/test_db');
+		this.stepBox = [
+			path.join(process.cwd(), './test/test_db'),
+			path.join(process.cwd(), './test/another_place/test_db')
+		];
 		this.table_name = 'user';
 		this.orm = ormhelper();
 		this.orm.enableCliLog();
@@ -67,7 +70,7 @@ module.exports = {
 			test.ok(!err);
 			test.ok(self.orm.schemas.Profile.address);
 			test.ok(self.orm.schemas.Profile.pno);
-			var steps = fs.readdirSync(self.stepBox);
+			var steps = fs.readdirSync(self.stepBox[self.stepBox.length-1]);
 			test.equal(step, _(steps[steps.length - 1].slice(0, 13)).value());
 			var user = self.orm.schemas.User.create({
 				uid: 'unique_name'
