@@ -21,10 +21,8 @@ module.exports = {
 		this.table_name = 'user';
 		this.orm = ormhelper();
 		this.orm.enableCliLog();
-		this.orm.useRedisCache({
-			host: '192.168.99.100',
-			port: 32769,
-			family: 4
+		this.orm.useMemoryCached({
+			'192.168.99.100:32770': 1
 		});
 		this.orm.useMysql({
 				host: '192.168.99.100',
