@@ -51,7 +51,6 @@ module.exports = {
 			});
 	},
 	tearDown: function(cb) {
-		console.log('Innnnnnn cb of tearDown');
 		if (!this.orm.schemas)
 			return;
 
