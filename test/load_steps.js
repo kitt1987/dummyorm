@@ -22,17 +22,20 @@ module.exports = {
 		this.orm = ormhelper();
 		this.orm.enableCliLog();
 		this.orm.useMemoryCached({
-			'192.168.99.100:32770': 1
+			server: '192.168.99.100:32770'
 		});
+		// this.orm.useRedisCache({
+		// 	server: '192.168.99.100:32771'
+		// });
 		this.orm.useMysql({
-				host: '192.168.99.100',
-				port: 32768,
-				user: 'root',
-				password: '0000',
-				connectTimeout: 1000,
-				acquireTimeout: 1000,
-				connectionLimit: 2,
-				queueLimit: 256
+				server: '192.168.99.100:32768',
+				account: 'root:0000',
+				privacy: {
+					connectTimeout: 1000,
+					acquireTimeout: 1000,
+					connectionLimit: 2,
+					queueLimit: 256
+				}
 			},
 			function(err) {
 				if (err) {
@@ -48,6 +51,7 @@ module.exports = {
 			});
 	},
 	tearDown: function(cb) {
+		console.log('Innnnnnn cb of tearDown');
 		if (!this.orm.schemas)
 			return;
 
@@ -205,8 +209,14 @@ module.exports = {
 
 		this.orm.save('key', user, function(err) {
 			test.ok(!err, err);
+			if (!self.orm.cacheEnabled()) {
+				test.done();
+				return;
+			}
+
 			self.orm.get('key', function(err, r) {
 				test.ok(!err, err);
+				console.log(util.inspect(r));
 				var obj = JSON.parse(r);
 				test.equal(user.uid, obj.uid);
 				test.equal(user.pw, obj.pw);
