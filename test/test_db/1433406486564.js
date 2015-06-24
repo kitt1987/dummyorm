@@ -15,7 +15,7 @@ exports.run = function(ormcache, cb) {
 		type: orm.String,
 		len: 36,
 		notNull: true
-	}]);
+	}], 'Memory');
 
 	cb(User);
 }

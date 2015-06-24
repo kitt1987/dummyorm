@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-'use strict'
+'use strict';
 
 var fs = require('fs');
 var path = require('path');
@@ -18,7 +18,7 @@ function StepScript() {
 
 StepScript.prototype.addRequired = function(varname, path) {
 	this.required.push(util.format('var %s = require(\'%s\');', varname, path));
-}
+};
 
 function formatLine(t) {
 	var v = t.replace(/{/g, '{\n');
@@ -30,7 +30,7 @@ function formatLine(t) {
 StepScript.prototype.addMember = function(name, func) {
 	var v = util.format('exports.%s = %s;', name, func);
 	this.methods.push(formatLine(v));
-}
+};
 
 StepScript.prototype.setExported = function(value) {
 	if (!value) {
@@ -38,7 +38,7 @@ StepScript.prototype.setExported = function(value) {
 	} else {
 		this.exported = 'exports = module.exports = ' + formatLine(value) + ';';
 	}
-}
+};
 
 StepScript.prototype.text = function() {
 	var all = _.flattenDeep([this.strict, this.required, this.exported, this.methods]);
@@ -50,7 +50,7 @@ StepScript.prototype.text = function() {
 			return line2;
 		}
 	});
-}
+};
 
 function calcStep(database) {
 	var steps = fs.readdirSync(database);
@@ -84,10 +84,11 @@ function calcStep(database) {
 			fs.mkdirSync(database);
 
 		var note = process.argv[3];
+		var footprint;
 		if (note) {
-			var footprint = '' + Date.now() + '-' + note + '.js';
+			footprint = '' + Date.now() + '-' + note + '.js';
 		} else {
-			var footprint = '' + Date.now() + '.js';
+			footprint = '' + Date.now() + '.js';
 		}
 
 		var step = path.join(database, footprint);

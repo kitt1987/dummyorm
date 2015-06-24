@@ -14,7 +14,7 @@ exports.run = function(ormcache, cb) {
 		name: 'age',
 		type: orm.SmallInteger,
 		notNull: true
-	}]);
+	}], 'Memory');
 
 	ormcache.User.contains(Profile);
 	cb([Profile, ormcache.User]);
