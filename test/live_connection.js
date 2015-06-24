@@ -1,5 +1,6 @@
 'use strict'
 
+var $ = require('../lib/dml/condition').$;
 var ormhelper = require('../');
 var path = require('path');
 var async = require('async');
@@ -177,7 +178,7 @@ module.exports = {
 			test.ok(!err);
 			self.orm.save('u2', u2, function(err) {
 				self.orm.query(user.schema)
-					.where(self.orm.condition().eq(self.orm.User.uid, u2.uid))
+					.where($(self.orm.User.uid, '=', u2.uid))
 					.exec(function(err, result) {
 						test.ok(!err);
 						console.log(util.inspect(result))
@@ -204,8 +205,8 @@ module.exports = {
 			test.ok(!err);
 			self.orm.save('u2', u2, function(err) {
 				self.orm.query(user.schema)
-					.where(self.orm.condition().eq(self.orm.User.uid, u2.uid)
-						.and(self.orm.condition().eq(self.orm.User.pw, u2.pw)))
+					.where($(self.orm.User.uid, '=', u2.uid, 'AND',
+						self.orm.User.pw, '=', u2.pw))
 					.exec(function(err, result) {
 						test.ok(!err);
 						console.log(util.inspect(result))
