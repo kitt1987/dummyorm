@@ -10,9 +10,9 @@ var mysql = require('mysql');
 var Redis = require('ioredis');
 var MemCached = require('memcached');
 
-process.on('uncaughtException', function(err) {
-	console.error(err.stack);
-});
+// process.on('uncaughtException', function(err) {
+// 	console.error(err.stack);
+// });
 
 module.exports = {
 	setUp: function(cb) {

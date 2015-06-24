@@ -7,9 +7,9 @@ var fs = require('fs');
 var _ = require('lodash');
 var util = require('util');
 
-process.on('uncaughtException', function(err) {
-	console.error(err.stack);
-});
+// process.on('uncaughtException', function(err) {
+// 	console.error(err.stack);
+// });
 
 module.exports = {
 	setUp: function(cb) {
@@ -31,6 +31,7 @@ module.exports = {
 				server: '192.168.99.100:32768',
 				account: 'root:0000',
 				privacy: {
+					mysql2: true,
 					connectTimeout: 1000,
 					acquireTimeout: 1000,
 					connectionLimit: 2,
