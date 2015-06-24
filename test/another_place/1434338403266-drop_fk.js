@@ -1,5 +1,5 @@
 'use strict'
-var orm = require('../../..');
+var orm = require('../..');
 exports = module.exports = {}
 exports.lastStep = '';
 exports.run = function(ormcache, cb) {

@@ -11,7 +11,7 @@ var colors = require('colors');
 var multi = require('multiline');
 
 function StepScript() {
-	this.strict = '\'use strict\'';
+	this.strict = '\'use strict\';';
 	this.required = [];
 	this.methods = [];
 }
@@ -28,15 +28,15 @@ function formatLine(t) {
 }
 
 StepScript.prototype.addMember = function(name, func) {
-	var v = util.format('exports.%s = %s', name, func);
+	var v = util.format('exports.%s = %s;', name, func);
 	this.methods.push(formatLine(v));
 }
 
 StepScript.prototype.setExported = function(value) {
 	if (!value) {
-		this.exported = 'exports = module.exports = {}';
+		this.exported = 'exports = module.exports = {};';
 	} else {
-		this.exported = 'exports = module.exports = ' + formatLine(value);
+		this.exported = 'exports = module.exports = ' + formatLine(value) + ';';
 	}
 }
 

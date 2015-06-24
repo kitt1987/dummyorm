@@ -19,7 +19,7 @@ module.exports = {
 		var self = this;
 		this.stepBox = [
 			path.join(process.cwd(), './test/test_db'),
-			path.join(process.cwd(), './test/another_place/test_db')
+			path.join(process.cwd(), './test/another_place')
 		];
 		this.table_name = 'user';
 		this.orm = ormhelper({
@@ -62,7 +62,7 @@ module.exports = {
 					throw err;
 				}
 
-				self.orm.loadSteps(self.stepBox, function(err) {
+				self.orm.loadSteps(self.stepBox, 'test_db', function(err) {
 					if (err)
 						throw err;
 
