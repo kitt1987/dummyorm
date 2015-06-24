@@ -22,7 +22,10 @@ module.exports = {
 			path.join(process.cwd(), './test/another_place/test_db')
 		];
 		this.table_name = 'user';
-		this.orm = ormhelper();
+		this.orm = ormhelper({
+			tag: 'live_conn'
+		});
+
 		this.orm.enableCliLog();
 
 		this.memcached = new MemCached('192.168.99.100:32770');
@@ -86,7 +89,7 @@ module.exports = {
 			test.ok(!err);
 			test.ok(self.orm.Profile.address);
 			test.ok(self.orm.Profile.pno);
-			var steps = fs.readdirSync(self.stepBox[self.stepBox.length-1]);
+			var steps = fs.readdirSync(self.stepBox[self.stepBox.length - 1]);
 			test.equal(step, _(steps[steps.length - 1].slice(0, 13)).value());
 			var user = self.orm.User.create({
 				uid: 'unique_name'
@@ -174,14 +177,14 @@ module.exports = {
 			test.ok(!err);
 			self.orm.save('u2', u2, function(err) {
 				self.orm.query(user.schema)
-				.where(self.orm.condition().eq(self.orm.User.uid, u2.uid))
-				.exec(function(err, result) {
-					test.ok(!err);
-					console.log(util.inspect(result))
-					test.equal(1, result.length);
-					test.equal(u2.uid, result[0].uid);
-					test.done();
-				});
+					.where(self.orm.condition().eq(self.orm.User.uid, u2.uid))
+					.exec(function(err, result) {
+						test.ok(!err);
+						console.log(util.inspect(result))
+						test.equal(1, result.length);
+						test.equal(u2.uid, result[0].uid);
+						test.done();
+					});
 			});
 		});
 	},
@@ -201,16 +204,16 @@ module.exports = {
 			test.ok(!err);
 			self.orm.save('u2', u2, function(err) {
 				self.orm.query(user.schema)
-				.where(self.orm.condition().eq(self.orm.User.uid, u2.uid)
-					.and(self.orm.condition().eq(self.orm.User.pw, u2.pw)))
-				.exec(function(err, result) {
-					test.ok(!err);
-					console.log(util.inspect(result))
-					test.equal(1, result.length);
-					test.equal(u2.uid, result[0].uid);
-					test.equal(u2.pw, result[0].pw);
-					test.done();
-				});
+					.where(self.orm.condition().eq(self.orm.User.uid, u2.uid)
+						.and(self.orm.condition().eq(self.orm.User.pw, u2.pw)))
+					.exec(function(err, result) {
+						test.ok(!err);
+						console.log(util.inspect(result))
+						test.equal(1, result.length);
+						test.equal(u2.uid, result[0].uid);
+						test.equal(u2.pw, result[0].pw);
+						test.done();
+					});
 			});
 		});
 	},

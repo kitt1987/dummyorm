@@ -23,6 +23,9 @@
     "url": "https://github.com/kitt1987/ormcache.js/issues"
   },
   "homepage": "https://github.com/kitt1987/ormcache.js",
+  "jshintConfig": {
+    "node": true
+  },
   "developDependencies": {
     "nodeunit": "^0.9.1"
   },
