@@ -139,25 +139,25 @@ module.exports = {
 			});
 		});
 	},
-	queryColumns: function(test) {
-		var self = this;
-		var user = this.orm.User.create({
-			uid: 'new_name',
-			pw: 'new_password'
-		});
+	// queryColumns: function(test) {
+	// 	var self = this;
+	// 	var user = this.orm.User.create({
+	// 		uid: 'new_name',
+	// 		pw: 'new_password'
+	// 	});
 
-		this.orm.save('key', user, function(err) {
-			test.ok(!err);
-			self.orm.query()
-				.select(self.orm.User.id, self.orm.User.pw)
-				.exec(function(err, result) {
-					test.ok(!err);
-					console.log(util.inspect(result))
-					test.equal(2, _.keys(result[0]).length);
-					test.done();
-				});
-		});
-	},
+	// 	this.orm.save('key', user, function(err) {
+	// 		test.ok(!err);
+	// 		self.orm.query()
+	// 			.select(self.orm.User.id, self.orm.User.pw)
+	// 			.exec(function(err, result) {
+	// 				test.ok(!err);
+	// 				console.log(util.inspect(result))
+	// 				test.equal(2, _.keys(result[0]).length);
+	// 				test.done();
+	// 			});
+	// 	});
+	// },
 	simpleCondition: function(test) {
 		var self = this;
 		var user = this.orm.User.create({
