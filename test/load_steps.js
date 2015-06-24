@@ -21,10 +21,10 @@ module.exports = {
 		this.table_name = 'user';
 		this.orm = ormhelper();
 		this.orm.enableCliLog();
-		this.orm.useMemoryCached({
+		this.orm.useMemcached({
 			server: '192.168.99.100:32770'
 		});
-		// this.orm.useRedisCache({
+		// this.orm.useRedis({
 		// 	server: '192.168.99.100:32771'
 		// });
 		this.orm.useMysql({

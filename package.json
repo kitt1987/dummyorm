@@ -1,7 +1,10 @@
 {
   "name": "ormcache.js",
-  "version": "0.0.7",
+  "version": "0.1.1",
   "description": "ORM for umhelper",
+  "bin": {
+    "ocddl": "bin/ddl.js"
+  },
   "main": "index.js",
   "directories": {
     "lib": "lib",
@@ -24,6 +27,7 @@
     "nodeunit": "^0.9.1"
   },
   "dependencies": {
+    "argparse": "^1.0.2",
     "async": "^1.0.0",
     "colors": "^1.1.0",
     "ioredis": "^1.5.1",

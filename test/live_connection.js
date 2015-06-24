@@ -26,7 +26,7 @@ module.exports = {
 		this.orm.enableCliLog();
 
 		this.memcached = new MemCached('192.168.99.100:32770');
-		this.orm.useMemoryCached({
+		this.orm.useMemcached({
 			liveConn: this.memcached
 		});
 
@@ -34,7 +34,7 @@ module.exports = {
 		// 	host: '192.168.99.100',
 		// 	port: 32771
 		// });
-		// this.orm.useRedisCache({
+		// this.orm.useRedis({
 		// 	liveConn: this.redis
 		// });
 
