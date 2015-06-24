@@ -16,16 +16,27 @@ module.exports = {
 	},
 	column: function(test) {
 		var c = new Column({
+			schema: {
+				tableName: 'schema'
+			},
 			name: 'Name',
 			type: Datatype.String
 		});
-		test.equal('Name = \'a\' ', $(c, '=', 'a'));
-		test.equal('Name =\'a\' ', $(c, '=\'a\''));
+		test.equal('schema.Name = \'a\' ', $(c, '=', 'a'));
+		test.equal('schema.Name =\'a\' ', $(c, '=\'a\''));
 		var c2 = new Column({
+			schema: {
+				tableName: 'schema'
+			},
 			name: 'age',
 			type: Datatype.Integer
 		});
-		test.equal('Name = \'a\' AND( age >10 ) ', $(c, '=', 'a', 'AND(', c2, '>10', ')'));
+		test.equal('schema.Name = \'a\' AND( schema.age >10 ) ',
+			$(c, '=', 'a', 'AND(', c2, '>10', ')'));
+		test.done();
+	},
+	nesting: function(test) {
+		test.equal('a > b AND a>b  ', $('a', '>', 'b', 'AND', $('a>b')));
 		test.done();
 	}
 }
