@@ -1,19 +1,15 @@
 'use strict'
 
-var $ = require('../lib/dml/condition').$;
-var ormhelper = require('../');
+var $ = require('../../lib/dml/condition').$;
+var ormhelper = require('../../');
 var path = require('path');
 var async = require('async');
 var fs = require('fs');
 var _ = require('lodash');
 var util = require('util');
 
-// process.on('uncaughtException', function(err) {
-// 	console.error(err.stack);
-// });
-
 module.exports = {
-	setUp: function(cb) {
+	setUp: function(t) {
 		var self = this;
 		this.stepBox = [
 			path.join(process.cwd(), './test/test_db'),
@@ -50,11 +46,11 @@ module.exports = {
 					if (err)
 						throw err;
 
-					cb();
+					t.done();
 				});
 			});
 	},
-	tearDown: function(cb) {
+	tearDown: function(t) {
 		var done = [];
 		if (this.orm.User)
 			done.push(this.orm.drop.bind(this.orm, this.orm.User));
@@ -64,7 +60,9 @@ module.exports = {
 
 		done.push(this.orm.dropDB.bind(this.orm, 'test_db'));
 		done.push(this.orm.disconnect.bind(this.orm));
-		async.series(done, cb);
+		async.series(done, function() {
+			t.done();
+		});
 	},
 	loading: function(test) {
 		var self = this;
@@ -73,15 +71,15 @@ module.exports = {
 			test.ok(self.orm.Profile.address);
 			test.ok(self.orm.Profile.pno);
 			var steps = fs.readdirSync(self.stepBox[self.stepBox.length - 1]);
-			test.equal(step, _(steps[steps.length - 1].slice(0, 13)).value());
+			test.eq(step, parseInt(steps[steps.length - 1].slice(0, 13)));
 			var user = self.orm.User.create({
 				uid: 'unique_name'
 			});
-			test.equal(user.uid, 'unique_name');
+			test.eq(user.uid, 'unique_name');
 			user.set({
 				pw: 'password'
 			});
-			test.equal(user.pw, 'password');
+			test.eq(user.pw, 'password');
 			self.orm.save('some_key', user, function(err) {
 				test.ok(!err, err);
 				user.set({
@@ -89,7 +87,7 @@ module.exports = {
 				});
 				self.orm.update('some_key', user, function(err) {
 					test.ok(!err, err);
-					test.equal(user.pw, 'new_password');
+					test.eq(user.pw, 'new_password');
 					self.orm.del('some_key', user, function(err) {
 						test.ok(!err, err);
 						test.done();
@@ -116,10 +114,10 @@ module.exports = {
 				self.orm.query(user.schema).exec(function(err, result) {
 					test.ok(!err);
 					console.log(util.inspect(result))
-					test.equal(2, result.length);
+					test.eq(2, result.length);
 					var numCols1 = _.keys(result[0]).length
 					var numCols2 = _.keys(result[1]).length
-					test.equal(numCols1, numCols2);
+					test.eq(numCols1, numCols2);
 					test.done();
 				});
 			});
@@ -139,7 +137,7 @@ module.exports = {
 	// 			.exec(function(err, result) {
 	// 				test.ok(!err);
 	// 				console.log(util.inspect(result))
-	// 				test.equal(2, _.keys(result[0]).length);
+	// 				test.eq(2, _.keys(result[0]).length);
 	// 				test.done();
 	// 			});
 	// 	});
@@ -164,8 +162,8 @@ module.exports = {
 					.exec(function(err, result) {
 						test.ok(!err);
 						console.log(util.inspect(result))
-						test.equal(1, result.length);
-						test.equal(u2.uid, result[0].uid);
+						test.eq(1, result.length);
+						test.eq(u2.uid, result[0].uid);
 						test.done();
 					});
 			});
@@ -192,9 +190,9 @@ module.exports = {
 					.exec(function(err, result) {
 						test.ok(!err);
 						console.log(util.inspect(result))
-						test.equal(1, result.length);
-						test.equal(u2.uid, result[0].uid);
-						test.equal(u2.pw, result[0].pw);
+						test.eq(1, result.length);
+						test.eq(u2.uid, result[0].uid);
+						test.eq(u2.pw, result[0].pw);
 						test.done();
 					});
 			});
@@ -218,8 +216,8 @@ module.exports = {
 				test.ok(!err, err);
 				console.log(util.inspect(r));
 				var obj = JSON.parse(r);
-				test.equal(user.uid, obj.uid);
-				test.equal(user.pw, obj.pw);
+				test.eq(user.uid, obj.uid);
+				test.eq(user.pw, obj.pw);
 				test.done();
 			});
 		});

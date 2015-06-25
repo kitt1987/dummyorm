@@ -11,7 +11,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "nodeunit test"
+    "test": "bu -d test/cases"
   },
   "repository": {
     "type": "git",
@@ -26,9 +26,6 @@
   "jshintConfig": {
     "node": true
   },
-  "developDependencies": {
-    "nodeunit": "^0.9.1"
-  },
   "dependencies": {
     "argparse": "^1.0.2",
     "async": "^1.0.0",
@@ -39,7 +36,6 @@
     "multiline": "^1.0.2",
     "mysql": "^2.7.0",
     "mysql2": "^0.15.8",
-    "nodeunit": "^0.9.1",
     "winston": "^1.0.0"
   }
 }
