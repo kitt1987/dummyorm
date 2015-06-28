@@ -16,8 +16,7 @@ exports.run = function(ormcache, cb) {
 		len: 36,
 		notNull: true
 	}], {
-		engine: 'Memory',
-		deleteToTable: 'ProfileDropped'
+		engine: 'Memory'
 	});
 
 	cb(User);

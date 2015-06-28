@@ -15,8 +15,7 @@ exports.run = function(ormcache, cb) {
 		type: orm.SmallInteger,
 		notNull: true
 	}], {
-		engine: 'Memory',
-		deleteToTable: 'ProfileDropped'
+		engine: 'Memory'
 	});
 
 	Profile.referTo(ormcache.User);
