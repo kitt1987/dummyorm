@@ -10,11 +10,7 @@ var MemCached = require('memcached');
 
 exports = module.exports = {
 	setUp: function(__) {
-		var stepBox = [
-			path.join(process.cwd(), './test/test_db'),
-			path.join(process.cwd(), './test/test_db2')
-		];
-
+		var stepBox = path.join(process.cwd(), './test/test_db');
 		var orm = ormhelper({
 			tag: 'live_conn'
 		});

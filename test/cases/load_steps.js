@@ -9,10 +9,7 @@ var util = require('util');
 
 module.exports = {
 	setUp: function(t) {
-		var stepBox = [
-			path.join(process.cwd(), './test/test_db'),
-			path.join(process.cwd(), './test/test_db2')
-		];
+		var stepBox = path.join(process.cwd(), './test/test_db');
 
 		var orm = ormhelper({
 			tag: 'loader'

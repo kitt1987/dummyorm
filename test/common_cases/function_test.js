@@ -13,7 +13,7 @@ exports = module.exports = {
 			test.ok(!err);
 			test.ok(orm.Profile.address);
 			test.ok(orm.Profile.pno);
-			var steps = fs.readdirSync(stepBox[stepBox.length - 1]);
+			var steps = fs.readdirSync(stepBox);
 			test.eq(step, parseInt(steps[steps.length - 1].slice(0, 13)));
 			var user = orm.User.create({
 				uid: 'unique_name'
