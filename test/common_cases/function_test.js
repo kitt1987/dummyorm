@@ -181,5 +181,32 @@ exports = module.exports = {
 				t.done();
 			});
 		});
+	},
+	many2many: function(t) {
+		var orm = t.ctx.orm;
+		var user = orm.User.create({
+			uid: 'u5',
+			pw: 'pssssssssss'
+		});
+
+		orm.save('u5pssssssss', user, function(err) {
+			t.ok(!err);
+			var trace = orm.Trace.create({
+				trace: 'ttttttttttrace'
+			});
+
+			orm.save('traceU5', trace, function(err) {
+				t.ok(!err);
+				var m = orm.UserM2MTrace.create({
+					User_id: user.id,
+					Trace_id: trace.id
+				});
+
+				orm.save('', m, function(err) {
+					t.ok(!err);
+					t.done();
+				})
+			});
+		});
 	}
 }
