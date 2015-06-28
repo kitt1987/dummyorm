@@ -2,7 +2,7 @@
 var orm = require('ormcache.js');
 exports = module.exports = {};
 exports.lastStep = '1435482913491-add-foreign-key.js';
-exports.run = function(ormcache, cb) {
+exports.run = function(ormcache, done) {
 
 	// FIXME create or modify schema here and pass the cb to orm
 	// You could access each schema by calling ormcache.schemas[schema_talbe_name].
@@ -16,5 +16,5 @@ exports.run = function(ormcache, cb) {
 		engine: 'Memory'
 	});
 
-	cb(Trace);
+	done();
 };

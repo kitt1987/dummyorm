@@ -2,7 +2,7 @@
 var orm = require('../..');
 exports = module.exports = {}
 exports.lastStep = '1434338403266-drop_fk.js';
-exports.run = function(ormcache, cb) {
+exports.run = function(ormcache, done) {
 	var Profile = ormcache.Profile;
 	Profile.addColumn([
 		{
@@ -17,5 +17,5 @@ exports.run = function(ormcache, cb) {
 		}
 	]);
 
-	cb(Profile);
+	done();
 }

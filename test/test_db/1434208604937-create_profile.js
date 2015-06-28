@@ -2,7 +2,7 @@
 var orm = require('../..');
 exports = module.exports = {}
 exports.lastStep = '1433406492804.js';
-exports.run = function(ormcache, cb) {
+exports.run = function(ormcache, done) {
 	// FIXME create or modify schema here and pass the cb to orm		
 	// You could access each schema by calling ormcache.schemas[schema_talbe_name].	
 	var Profile = ormcache.define('Profile', [{
@@ -19,5 +19,5 @@ exports.run = function(ormcache, cb) {
 	});
 
 	Profile.referTo(ormcache.User);
-	cb(Profile);
+	done();
 }

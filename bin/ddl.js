@@ -65,9 +65,9 @@ function calcStep(database) {
 	ss.addMember('lastStep', '\'' + last_step + '\'');
 	ss.addMember('run', multi.stripIndent(function() {
 		/*
-				function(ormcache, cb) {
-					// FIXME create or modify schema here and pass the cb to orm
-					// You could access each schema by calling ormcache.schemas[schema_talbe_name].
+				function(ormcache, done) {
+					// FIXME create or modify schema here and call done() to save changes.
+					// You could access each schema by calling ormcache[schemaTalbeName].
 				}
 			*/
 	}));
@@ -295,11 +295,18 @@ function createStep(database, note) {
 			return;
 		}
 
-		if (args.compact) {}
-
-		validate(args.dir);
-		if (args.validate) {
+		if (args.compact) {
+			console.error(colors.red('Waiting for releasing!'));
 			return;
+		}
+
+		if (args.validate) {
+			validate(args.dir);
+			return;
+		}
+
+		if (fs.existsSync(args.dir[0])) {
+			validate(args.dir);
 		}
 
 		createStep(args.dir[0], args.name);
