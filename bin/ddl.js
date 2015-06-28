@@ -24,11 +24,11 @@ function formatLine(t) {
 	var v = t.replace(/{/g, '{\n');
 	if (!_.endsWith(v, '}'))
 		v += ';';
-	return v.replace(/}/g, '\n}\n');
+	return v.replace(/}/g, '\n};\n');
 }
 
 StepScript.prototype.addMember = function(name, func) {
-	var v = util.format('exports.%s = %s;', name, func);
+	var v = util.format('exports.%s = %s', name, func);
 	this.methods.push(formatLine(v));
 };
 
@@ -194,6 +194,76 @@ function mergeSteps(dir, steps, tmp) {
 	});
 }
 
+function validate(dirs) {
+	var validators = [];
+	_.forEach(dirs, function(dir) {
+		var steps = fs.readdirSync(dir);
+		if (steps.length === 0) {
+			return;
+		}
+
+		var vs = _.map(steps, function(step) {
+			return function(lastStep, cb) {
+				var stepPath = path.join(dir, step);
+				var modulePath = path.relative(path.dirname(module.filename), stepPath);
+				var stepModule = require(modulePath);
+				if (lastStep !== stepModule.lastStep) {
+					cb('lastStep of ' + stepPath + ' should be ' + lastStep);
+					return;
+				}
+				cb(null, step);
+			}
+		});
+
+		vs[0] = vs[0].bind(null, '');
+		vs[vs.length - 1] = function(lastStep, cb) {
+			var stepPath = path.join(dir, steps[steps.length - 1]);
+			var modulePath = path.relative(path.dirname(module.filename), stepPath);
+			var stepModule = require(modulePath);
+			if (lastStep !== stepModule.lastStep) {
+				cb('lastStep of ' + stepPath + ' should be ' + lastStep);
+				return;
+			}
+			cb();
+		};
+
+		validators.push(vs);
+	});
+
+	validators = _.flattenDeep(validators);
+	async.waterfall(validators, function(err, result) {
+		if (err) {
+			console.error(colors.red('Error: ' + err));
+		}
+	});
+}
+
+function createStep(database, note) {
+	if (!database)
+		throw Error('You should set a folder to save all steps at least');
+
+	if (!fs.existsSync(database))
+		fs.mkdirSync(database);
+
+	var footprint;
+	if (note) {
+		footprint = '' + Date.now() + '-' + note + '.js';
+	} else {
+		footprint = '' + Date.now() + '.js';
+	}
+
+	var step = path.join(database, footprint);
+	if (fs.existsSync(step))
+		throw Error('You or some others save the same steps or you put this command in a loop');
+
+	fs.writeFile(step, calcStep(database), function(err) {
+		if (err)
+			throw err;
+	});
+
+	console.info(colors.green(footprint + ' is created'));
+}
+
 (function() {
 	try {
 		console.log(colors.yellow('Make sure run this under you project directory!!'));
@@ -227,76 +297,12 @@ function mergeSteps(dir, steps, tmp) {
 
 		if (args.compact) {}
 
+		validate(args.dir);
 		if (args.validate) {
-			var validators = [];
-			_.forEach(args.dir, function(dir) {
-				var steps = fs.readdirSync(dir);
-				if (steps.length === 0) {
-					return;
-				}
-
-				var vs = _.map(steps, function(step) {
-					return function(lastStep, cb) {
-						var stepPath = path.join(dir, step);
-						var modulePath = path.relative(path.dirname(module.filename), stepPath);
-						var stepModule = require(modulePath);
-						if (lastStep !== stepModule.lastStep) {
-							cb('lastStep of ' + stepPath + ' should be ' + lastStep);
-							return;
-						}
-						cb(null, step);
-					}
-				});
-
-				vs[0] = vs[0].bind(null, '');
-				vs[vs.length - 1] = function(lastStep, cb) {
-					var stepPath = path.join(dir, steps[steps.length - 1]);
-					var modulePath = path.relative(path.dirname(module.filename), stepPath);
-					var stepModule = require(modulePath);
-					if (lastStep !== stepModule.lastStep) {
-						cb('lastStep of ' + stepPath + ' should be ' + lastStep);
-						return;
-					}
-					cb();
-				};
-
-				validators.push(vs);
-			});
-
-			validators = _.flattenDeep(validators);
-			async.waterfall(validators, function(err, result) {
-				if (err) {
-					console.error(colors.red('Error: ' + err));
-				}
-			});
 			return;
 		}
 
-		var database = args.dir[0];
-		if (!database)
-			throw Error('You should set a folder to save all steps at least');
-
-		if (!fs.existsSync(database))
-			fs.mkdirSync(database);
-
-		var note = args.name;
-		var footprint;
-		if (note) {
-			footprint = '' + Date.now() + '-' + note + '.js';
-		} else {
-			footprint = '' + Date.now() + '.js';
-		}
-
-		var step = path.join(database, footprint);
-		if (fs.existsSync(step))
-			throw Error('You or some others save the same steps or you put this command in a loop');
-
-		fs.writeFile(step, calcStep(database), function(err) {
-			if (err)
-				throw err;
-		});
-
-		console.info(colors.green(footprint + ' is created'));
+		createStep(args.dir[0], args.name);
 	} catch (err) {
 		console.error(colors.red(err.stack));
 	}

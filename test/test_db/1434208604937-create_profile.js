@@ -14,8 +14,11 @@ exports.run = function(ormcache, cb) {
 		name: 'age',
 		type: orm.SmallInteger,
 		notNull: true
-	}], 'Memory');
+	}], {
+		engine: 'Memory',
+		deleteToTable: 'ProfileDropped'
+	});
 
-	ormcache.User.contains(Profile);
-	cb([Profile, ormcache.User]);
+	Profile.referTo(ormcache.User);
+	cb(Profile);
 }

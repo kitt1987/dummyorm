@@ -15,7 +15,10 @@ exports.run = function(ormcache, cb) {
 		type: orm.String,
 		len: 36,
 		notNull: true
-	}], 'Memory');
+	}], {
+		engine: 'Memory',
+		deleteToTable: 'ProfileDropped'
+	});
 
 	cb(User);
 }

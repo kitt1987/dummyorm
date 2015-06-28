@@ -153,11 +153,32 @@ exports = module.exports = {
 			}
 
 			orm.get('key', function(err, r) {
-				test.ok(!err, err);
+				test.ok(!err);
 				var obj = JSON.parse(r);
 				test.eq(user.uid, obj.uid);
 				test.eq(user.pw, obj.pw);
 				test.done();
+			});
+		});
+	},
+	referToFK: function(t) {
+		var orm = t.ctx.orm;
+		var user = orm.User.create({
+			uid: 'u4',
+			pw: 'pssssssssss'
+		});
+
+		orm.save('u4pssssssss', user, function(err) {
+			t.ok(!err);
+			var profile = orm.Profile.create({
+				name: 'u4',
+				age: 20,
+				User_id: user.id
+			});
+
+			orm.save('profileu4', profile, function(err) {
+				t.ok(!err);
+				t.done();
 			});
 		});
 	}

@@ -7,6 +7,6 @@ exports.run = function(ormcache, cb) {
 	// You could access each schema by calling ormcache.schemas[schema_talbe_name].	
 	var Profile = ormcache.Profile;
 	var User = ormcache.User;
-	User.dropRelation(Profile);
-	cb(User);
+	Profile.dropRelation(User);
+	cb(Profile);
 }
