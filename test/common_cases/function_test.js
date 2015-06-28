@@ -173,7 +173,7 @@ exports = module.exports = {
 			var profile = orm.Profile.create({
 				name: 'u4',
 				age: 20,
-				User_id: user.id
+				User: user
 			});
 
 			orm.save('profileu4', profile, function(err) {
@@ -198,8 +198,8 @@ exports = module.exports = {
 			orm.save('traceU5', trace, function(err) {
 				t.ok(!err);
 				var m = orm.UserM2MTrace.create({
-					User_id: user.id,
-					Trace_id: trace.id
+					User: user,
+					Trace: trace
 				});
 
 				orm.save('', m, function(err) {
@@ -208,5 +208,26 @@ exports = module.exports = {
 				})
 			});
 		});
+	},
+	transaction: function(t) {
+		var orm = t.ctx.orm;
+		var user = orm.User.create({
+			uid: 'u6',
+			pw: 'pssssssssss'
+		});
+
+		var profile = orm.Profile.create({
+			name: 'u6',
+			age: 20,
+			User: user
+		});
+
+		var trans = orm.transaction();
+		trans.save(user)
+			.save(profile)
+			.exec(function(err) {
+				t.ok(err);
+				t.done();
+			});
 	}
 }
