@@ -77,7 +77,7 @@ function calcStep(database) {
 function defineOptions() {
 	var ArgumentParser = require('argparse').ArgumentParser;
 	var parser = new ArgumentParser({
-		version: '0.0.0',
+		version: '0.1.0',
 		addHelp: true,
 		description: 'Unit testing framework'
 	});
@@ -119,7 +119,6 @@ function defineOptions() {
 	return parser.parseArgs();
 }
 
-// ocddl -m -d dir1 -d dir2 to merge steps into the 1st dir
 // ocddl -d dir1 to create a new step
 // ocddl -v -d dir1 -d dir2 to validate all steps in dir1 and dir2
 // ocddl -c -d dir1 -d dir2 to compact steps in dir1 and dir2 into 1 step saved in dir1
@@ -143,8 +142,7 @@ function updateLastSteps(tmp, dir) {
 			var modulePath = path.relative(path.dirname(module.filename), stepPath);
 			var stepModule = require(modulePath);
 			if (lastStep !== stepModule.lastStep) {
-				fs.writeFile(stepPath, util.format('\nexports.lastStep = \'%s\';', lastStep),
-					{
+				fs.writeFile(stepPath, util.format('\nexports.lastStep = \'%s\';', lastStep), {
 						flag: 'a'
 					},
 					function(err) {
@@ -227,9 +225,52 @@ function mergeSteps(dir, steps, tmp) {
 			return;
 		}
 
-		if (args.validate) {}
-
 		if (args.compact) {}
+
+		if (args.validate) {
+			var validators = [];
+			_.forEach(args.dir, function(dir) {
+				var steps = fs.readdirSync(dir);
+				if (steps.length === 0) {
+					return;
+				}
+
+				var vs = _.map(steps, function(step) {
+					return function(lastStep, cb) {
+						var stepPath = path.join(dir, step);
+						var modulePath = path.relative(path.dirname(module.filename), stepPath);
+						var stepModule = require(modulePath);
+						if (lastStep !== stepModule.lastStep) {
+							cb('lastStep of ' + stepPath + ' should be ' + lastStep);
+							return;
+						}
+						cb(null, step);
+					}
+				});
+
+				vs[0] = vs[0].bind(null, '');
+				vs[vs.length - 1] = function(lastStep, cb) {
+					var stepPath = path.join(dir, steps[steps.length - 1]);
+					var modulePath = path.relative(path.dirname(module.filename), stepPath);
+					var stepModule = require(modulePath);
+					if (lastStep !== stepModule.lastStep) {
+						cb('lastStep of ' + stepPath + ' should be ' + lastStep);
+						return;
+					}
+					cb();
+				};
+
+				validators.push(vs);
+			});
+
+			validators = _.flattenDeep(validators);
+			async.waterfall(validators, function(err, result) {
+				if (err) {
+					console.error(colors.red('Error: ' + err));
+				}
+			});
+			return;
+		}
 
 		var database = args.dir[0];
 		if (!database)
