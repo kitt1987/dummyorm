@@ -3,7 +3,7 @@
 var fs = require('fs');
 var util = require('util');
 var _ = require('lodash');
-var $ = require('../../lib/dml/condition').$;
+var $ = require('../..').$;
 
 exports = module.exports = {
 	loading: function(test) {
