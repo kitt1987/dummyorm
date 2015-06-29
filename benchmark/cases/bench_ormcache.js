@@ -21,7 +21,7 @@ exports = module.exports = {
 					mysql2: true,
 					connectTimeout: 1000,
 					acquireTimeout: 1000,
-					connectionLimit: 2,
+					connectionLimit: 1,
 					queueLimit: 0
 				}
 			},
@@ -49,11 +49,12 @@ exports = module.exports = {
 	cases: {
 		insertion: function(t) {
 			var start = _.now();
-			var times = 1000;
+			var times = 10000;
 			async.times(times, function(id, next) {
 				var r = t.orm.benchData.create({
-					textData: 'This is test text data',
-					integerData: 1234567
+					alpha: 1,
+					beta: 'hello',
+					pi: 3.141
 				});
 
 				t.orm.save('', r, function(err, result) {
@@ -62,12 +63,26 @@ exports = module.exports = {
 				});
 			}, function(err) {
 				t.ok(!err);
-				console.log('qps:' + ((_.now() - start) * 1000 / times));
+				console.log('\nInsertion rps:' + Math.round(times * 1000 / ((_.now() - start))));
 				t.done();
 			});
 		},
 		selection: function(t) {
-			t.done();
+			var start = _.now();
+			var times = 1000;
+			var rows = 0;
+			async.times(times, function(id, next) {
+				t.orm.query(t.orm.benchData).exec(function(err, result) {
+					t.ok(!err);
+					t.gt(result.length, 0);
+					rows += result.length;
+					next();
+				});
+			}, function(err) {
+				t.ok(!err);
+				console.log('\nrps:' + Math.round(rows * 1000 / ((_.now() - start))));
+				t.done();
+			});
 		}
 	}
-}
+};
