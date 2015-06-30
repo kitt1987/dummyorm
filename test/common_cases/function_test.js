@@ -96,9 +96,13 @@ exports = module.exports = {
 			pw: 'u2_password'
 		});
 
-		orm.save('key', user, function(err) {
+		var keygen = function(user) {
+			return 'xxxx' + user.id;
+		}
+
+		orm.save(keygen, user, function(err) {
 			test.ok(!err);
-			orm.save('u2', u2, function(err) {
+			orm.save(keygen, u2, function(err) {
 				orm.query(user.schema)
 					.where($(orm.User.uid, '=', u2.uid))
 					.exec(function(err, result) {
@@ -145,14 +149,18 @@ exports = module.exports = {
 			pw: 'password'
 		});
 
-		orm.save('key', user, function(err) {
+		var keygen = function(user) {
+			return 'xxxx' + user.id;
+		}
+
+		orm.save(keygen, user, function(err) {
 			test.ok(!err, err);
 			if (!orm.cacheEnabled()) {
 				test.done();
 				return;
 			}
 
-			orm.get('key', function(err, r) {
+			orm.get(keygen(user), function(err, r) {
 				test.ok(!err);
 				var obj = JSON.parse(r);
 				test.eq(user.uid, obj.uid);
