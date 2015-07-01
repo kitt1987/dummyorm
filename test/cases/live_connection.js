@@ -66,12 +66,6 @@ exports = module.exports = {
 	tearDown: function(__) {
 		var orm = __.ctx.orm;
 		var done = [];
-		if (orm.User)
-			done.push(orm.drop.bind(orm, orm.User));
-
-		if (orm.Profile)
-			orm.drop.bind(orm, orm.Profile);
-
 		done.push(orm.dropDB.bind(orm, 'test_db'));
 		done.push(orm.disconnect.bind(orm));
 		async.series(done, function() {

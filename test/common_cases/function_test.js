@@ -230,11 +230,15 @@ exports = module.exports = {
 			User: user
 		});
 
+		var keygen = function(user) {
+			return 'xxxx' + user.id;
+		}
+
 		var trans = orm.transaction();
-		trans.save(user)
-			.save(profile)
+		trans.save(keygen, user)
+			.save(keygen, profile)
 			.exec(function(err) {
-				t.ok(err);
+				t.ok(!err);
 				t.done();
 			});
 	}
