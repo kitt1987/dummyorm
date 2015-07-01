@@ -77,9 +77,9 @@ function calcStep(database) {
 function defineOptions() {
 	var ArgumentParser = require('argparse').ArgumentParser;
 	var parser = new ArgumentParser({
-		version: '0.1.0',
+		version: require('../package.json').version,
 		addHelp: true,
-		description: 'Unit testing framework'
+		description: 'Generate, merge or validate ddl steps of ormcache.'
 	});
 
 	parser.addArgument(
