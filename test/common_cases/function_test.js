@@ -241,5 +241,30 @@ exports = module.exports = {
 				t.nothing(err);
 				t.done();
 			});
+	},
+	transactionAgain: function(t) {
+		var orm = t.ctx.orm;
+		var user = orm.User.create({
+			uid: 'u6',
+			pw: 'pssssssssss'
+		});
+
+		var profile = orm.Profile.create({
+			name: 'u6',
+			age: 20,
+			User: user
+		});
+
+		var keygen = function(user) {
+			return 'xxxx' + user.id;
+		}
+
+		var trans = orm.transaction();
+		trans.save(keygen, user)
+			.save(keygen, profile)
+			.exec(function(err) {
+				t.nothing(err);
+				t.done();
+			});
 	}
 }
