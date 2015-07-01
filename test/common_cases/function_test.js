@@ -10,7 +10,7 @@ exports = module.exports = {
 		var orm = test.ctx.orm;
 		var stepBox = test.ctx.stepBox;
 		orm.currentStep(function(err, step) {
-			test.ok(!err);
+			test.nothing(err);
 			test.ok(orm.Profile.address);
 			test.ok(orm.Profile.pno);
 			var steps = fs.readdirSync(stepBox);
@@ -24,15 +24,15 @@ exports = module.exports = {
 			});
 			test.eq(user.pw, 'password');
 			orm.save('some_key', user, function(err) {
-				test.ok(!err, err);
+				test.nothing(err);
 				user.set({
 					pw: 'new_password'
 				});
 				orm.update('some_key', user, function(err) {
-					test.ok(!err, err);
+					test.nothing(err);
 					test.eq(user.pw, 'new_password');
 					orm.del('some_key', user, function(err) {
-						test.ok(!err, err);
+						test.nothing(err);
 						test.done();
 					});
 				});
@@ -52,10 +52,10 @@ exports = module.exports = {
 		});
 
 		orm.save('key', user, function(err) {
-			test.ok(!err);
+			test.nothing(err);
 			orm.save('u2', u2, function(err) {
 				orm.query(user.schema).exec(function(err, result) {
-					test.ok(!err);
+					test.nothing(err);
 					test.eq(2, result.length);
 					var numCols1 = _.keys(result[0]).length;
 					var numCols2 = _.keys(result[1]).length;
@@ -101,7 +101,7 @@ exports = module.exports = {
 		}
 
 		orm.save(keygen, user, function(err) {
-			test.ok(!err);
+			test.nothing(err);
 			orm.save(keygen, u2, function(err) {
 				orm.query(user.schema)
 					.where($(orm.User.uid, '=', u2.uid))
@@ -127,7 +127,7 @@ exports = module.exports = {
 		});
 
 		orm.save('key', user, function(err) {
-			test.ok(!err);
+			test.nothing(err);
 			orm.save('u2', u2, function(err) {
 				orm.query(user.schema)
 					.where($(orm.User.uid, '=', u2.uid, 'AND',
@@ -154,14 +154,14 @@ exports = module.exports = {
 		}
 
 		orm.save(keygen, user, function(err) {
-			test.ok(!err, err);
+			test.nothing(err);
 			if (!orm.cacheEnabled()) {
 				test.done();
 				return;
 			}
 
 			orm.get(keygen(user), function(err, r) {
-				test.ok(!err);
+				test.nothing(err);
 				var obj = JSON.parse(r);
 				test.eq(user.uid, obj.uid);
 				test.eq(user.pw, obj.pw);
@@ -177,7 +177,7 @@ exports = module.exports = {
 		});
 
 		orm.save('u4pssssssss', user, function(err) {
-			t.ok(!err);
+			t.nothing(err);
 			var profile = orm.Profile.create({
 				name: 'u4',
 				age: 20,
@@ -198,20 +198,20 @@ exports = module.exports = {
 		});
 
 		orm.save('u5pssssssss', user, function(err) {
-			t.ok(!err);
+			t.nothing(err);
 			var trace = orm.Trace.create({
 				trace: 'ttttttttttrace'
 			});
 
 			orm.save('traceU5', trace, function(err) {
-				t.ok(!err);
+				t.nothing(err);
 				var m = orm.UserM2MTrace.create({
 					User: user,
 					Trace: trace
 				});
 
 				orm.save('', m, function(err) {
-					t.ok(!err);
+					t.nothing(err);
 					t.done();
 				})
 			});
@@ -238,7 +238,7 @@ exports = module.exports = {
 		trans.save(keygen, user)
 			.save(keygen, profile)
 			.exec(function(err) {
-				t.ok(!err);
+				t.nothing(err);
 				t.done();
 			});
 	}
