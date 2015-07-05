@@ -55,8 +55,8 @@ module.exports = {
 		var orm = t.ctx.orm;
 		var done = [];
 		done.push(orm.dropDB.bind(orm, 'test_db'));
-		done.push(orm.disconnect.bind(orm));
 		async.series(done, function() {
+			orm.disconnect();
 			t.done();
 		});
 	},
