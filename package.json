@@ -1,6 +1,6 @@
 {
   "name": "ormcache.js",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "ORM for umhelper",
   "bin": {
     "ocddl": "bin/ddl.js"
@@ -35,7 +35,9 @@
     "memcached": "^2.1.0",
     "multiline": "^1.0.2",
     "mysql": "^2.7.0",
-    "mysql2": "^0.15.8",
-    "winston": "^1.0.0"
+    "mysql2": "^0.15.8"
+  },
+  "devDependencies": {
+    "winston": "^1.0.1"
   }
 }

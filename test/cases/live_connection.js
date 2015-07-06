@@ -7,12 +7,14 @@ var async = require('async');
 var mysql = require('mysql');
 var Redis = require('ioredis');
 var MemCached = require('memcached');
+var winston = require('winston');
 
 exports = module.exports = {
 	setUp: function(__) {
 		var stepBox = path.join(process.cwd(), './test/test_db');
 		var orm = ormhelper({
-			tag: 'live_conn'
+			tag: 'live_conn',
+			logger: winston
 		});
 
 		__.ctx = {
@@ -20,7 +22,6 @@ exports = module.exports = {
 			orm: orm
 		};
 
-		orm.enableCliLog();
 		orm.useMemcached({
 			liveConn: new MemCached('192.168.99.100:32770')
 		});

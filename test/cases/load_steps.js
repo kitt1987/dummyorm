@@ -20,7 +20,6 @@ module.exports = {
 			orm: orm
 		};
 
-		orm.enableCliLog();
 		orm.useMemcached({
 			server: '192.168.99.100:32770'
 		});
