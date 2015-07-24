@@ -15,7 +15,8 @@ exports.run = function(ormcache, done) {
 		type: orm.SmallInteger,
 		notNull: true
 	}], {
-		engine: 'Memory'
+		engine: 'Memory',
+		charset: 'utf8',
 	});
 
 	Profile.referTo(ormcache.User);

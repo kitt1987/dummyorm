@@ -169,6 +169,25 @@ exports = module.exports = {
 			});
 		});
 	},
+	saveSimpleObj: function(t) {
+		var orm = t.ctx.orm;
+		var fc = fc || {};
+		fc.lastTs = _.now();
+		if (fc.count) {
+			fc.count += 1;
+		} else {
+			fc.count = 0;
+		}
+
+		orm.keepSimple('umh#FC#13323333333', fc, function(err) {
+			t.nothing(err);
+			orm.keepSimple('umh#FC#::ffff:127.0.0.1', fc, function(err) {
+				t.nothing(err);
+				t.done();
+			});
+		});
+
+	},
 	referToFK: function(t) {
 		var orm = t.ctx.orm;
 		var user = orm.User.create({
