@@ -21,13 +21,13 @@ module.exports = {
 		};
 
 		orm.useMemcached({
-			server: '192.168.99.100:32770'
+			server: '192.168.99.102:32773'
 		});
 		// this.orm.useRedis({
 		// 	server: '192.168.99.100:32771'
 		// });
 		orm.useMysql({
-				server: '192.168.99.100:32768',
+				server: '192.168.99.102:32768',
 				account: 'root:0000',
 				privacy: {
 					mysql2: true,

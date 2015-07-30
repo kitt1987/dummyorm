@@ -23,7 +23,7 @@ exports = module.exports = {
 		};
 
 		orm.useMemcached({
-			liveConn: new MemCached('192.168.99.100:32770')
+			liveConn: new MemCached('192.168.99.102:32773')
 		});
 
 		// this.redis = new Redis({
@@ -35,7 +35,7 @@ exports = module.exports = {
 		// });
 
 		var mysqlConn = mysql.createConnection({
-			host: '192.168.99.100',
+			host: '192.168.99.102',
 			port: 32768,
 			user: 'root',
 			password: '0000',
