@@ -105,6 +105,8 @@ exports = module.exports = {
 			orm.save(keygen, u2, function(err) {
 				orm.query(user.schema)
 					.where($(orm.User.uid, '=', u2.uid))
+					.orderBy(user.schema.id)
+					.desc()
 					.exec(function(err, result) {
 						test.ok(!err);
 						test.eq(1, result.length);
