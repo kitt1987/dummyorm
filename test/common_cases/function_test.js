@@ -65,25 +65,26 @@ exports = module.exports = {
 			});
 		});
 	},
-	// queryColumns: function(test) {
-	// 	var self = this;
-	// 	var user = orm.User.create({
-	// 		uid: 'new_name',
-	// 		pw: 'new_password'
-	// 	});
+	queryColumns: function(test) {
+		var orm = test.ctx.orm;
+		var self = this;
+		var user = orm.User.create({
+			uid: 'new_name',
+			pw: 'new_password'
+		});
 
-	// 	orm.save('key', user, function(err) {
-	// 		test.ok(!err);
-	// 		orm.query()
-	// 			.select(orm.User.id, orm.User.pw)
-	// 			.exec(function(err, result) {
-	// 				test.ok(!err);
-	// 				console.log(util.inspect(result))
-	// 				test.eq(2, _.keys(result[0]).length);
-	// 				test.done();
-	// 			});
-	// 	});
-	// },
+		orm.save('key', user, function(err) {
+			test.ok(!err);
+			orm.query()
+				.select(orm.User.id, orm.User.pw)
+				.exec(function(err, result) {
+					test.ok(!err);
+					console.log(util.inspect(result))
+					test.eq(2, _.keys(result[0]).length);
+					test.done();
+				});
+		});
+	},
 	simpleCondition: function(test) {
 		var orm = test.ctx.orm;
 		var user = orm.User.create({
@@ -141,6 +142,35 @@ exports = module.exports = {
 						test.eq(u2.pw, result[0].pw);
 						test.done();
 					});
+			});
+		});
+	},
+	join: function(test) {
+		var orm = test.ctx.orm;
+		var self = this;
+		var user = orm.User.create({
+			uid: 'new_name',
+			pw: 'new_password'
+		});
+
+		orm.save('key', user, function(err) {
+			test.ok(!err);
+			var profile = orm.Profile.create({
+				User: user.id,
+				name: 'xxxx',
+				age: 12,
+			});
+
+			orm.save('', profile, function(err) {
+				test.ok(!err);
+				orm.query(orm.Profile)
+				.join(orm.User, $(orm.Profile.User, '=', orm.User.id))
+				.exec(function(err, result) {
+					test.ok(!err);
+					console.log(util.inspect(result))
+					test.eq(user.pw, result[0].pw);
+					test.done();
+				});
 			});
 		});
 	},
