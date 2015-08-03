@@ -85,6 +85,27 @@ exports = module.exports = {
 				});
 		});
 	},
+	queryCount: function(test) {
+		var orm = test.ctx.orm;
+		var self = this;
+		var user = orm.User.create({
+			uid: 'new_name',
+			pw: 'new_password'
+		});
+
+		orm.save('key', user, function(err) {
+			test.ok(!err);
+			orm.query(orm.User)
+				.select($('COUNT(', orm.User.id, ') AS count'))
+				.exec(function(err, result) {
+					test.ok(!err);
+					console.log(util.inspect(result))
+					test.eq(1, result.length);
+					test.lt(0, result[0].count);
+					test.done();
+				});
+		});
+	},
 	simpleCondition: function(test) {
 		var orm = test.ctx.orm;
 		var user = orm.User.create({

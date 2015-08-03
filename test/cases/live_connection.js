@@ -42,7 +42,7 @@ exports = module.exports = {
 			connectTimeout: 1000,
 			acquireTimeout: 1000,
 			connectionLimit: 2,
-			queueLimit: 256
+			queueLimit: 256,
 		});
 
 		mysqlConn.connect(function(err) {
