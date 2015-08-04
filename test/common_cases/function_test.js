@@ -85,6 +85,23 @@ exports = module.exports = {
 				});
 		});
 	},
+	performSql: function(test) {
+		var orm = test.ctx.orm;
+		var self = this;
+		var user = orm.User.create({
+			uid: 'new_name',
+			pw: 'new_password'
+		});
+
+		orm.save('key', user, function(err) {
+			test.ok(!err);
+			orm.sql($('SELECT * FROM', orm.User), function(err, result) {
+				test.ok(!err);
+				console.log(util.inspect(result))
+				test.done();
+			});
+		});
+	},
 	queryCount: function(test) {
 		var orm = test.ctx.orm;
 		var self = this;
@@ -185,13 +202,13 @@ exports = module.exports = {
 			orm.save('', profile, function(err) {
 				test.ok(!err);
 				orm.query(orm.Profile)
-				.join(orm.User, $(orm.Profile.User, '=', orm.User.id))
-				.exec(function(err, result) {
-					test.ok(!err);
-					console.log(util.inspect(result))
-					test.eq(user.pw, result[0].pw);
-					test.done();
-				});
+					.join(orm.User, $(orm.Profile.User, '=', orm.User.id))
+					.exec(function(err, result) {
+						test.ok(!err);
+						console.log(util.inspect(result))
+						test.eq(user.pw, result[0].pw);
+						test.done();
+					});
 			});
 		});
 	},
