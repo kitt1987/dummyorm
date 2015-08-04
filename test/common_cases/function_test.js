@@ -39,6 +39,16 @@ exports = module.exports = {
 			});
 		});
 	},
+	updater: function(test) {
+		var orm = test.ctx.orm;
+		orm.updater(orm.User)
+			.set(orm.User.uid, 'just_updated')
+			.set(orm.User.pw, 'also_just_updated')
+			.exec(function(err, result) {
+				test.nothing(err);
+				test.done();
+			});
+	},
 	simpleQuery: function(test) {
 		var orm = test.ctx.orm;
 		var user = orm.User.create({
@@ -79,27 +89,9 @@ exports = module.exports = {
 				.select(orm.User.id, orm.User.pw)
 				.exec(function(err, result) {
 					test.ok(!err);
-					console.log(util.inspect(result))
 					test.eq(2, _.keys(result[0]).length);
 					test.done();
 				});
-		});
-	},
-	performSql: function(test) {
-		var orm = test.ctx.orm;
-		var self = this;
-		var user = orm.User.create({
-			uid: 'new_name',
-			pw: 'new_password'
-		});
-
-		orm.save('key', user, function(err) {
-			test.ok(!err);
-			orm.sql($('SELECT * FROM', orm.User), function(err, result) {
-				test.ok(!err);
-				console.log(util.inspect(result))
-				test.done();
-			});
 		});
 	},
 	queryCount: function(test) {
