@@ -349,5 +349,12 @@ exports = module.exports = {
 				t.nothing(err);
 				t.done();
 			});
+	},
+	flushCache: function(t) {
+		var orm = t.ctx.orm;
+		orm.cache.flush(function(err) {
+			t.nothing(err);
+			t.done();
+		});
 	}
 }
