@@ -187,6 +187,7 @@ exports = module.exports = {
 			var profile = orm.Profile.create({
 				User: user.id,
 				name: 'xxxx',
+				married: true,
 				age: 12,
 			});
 
@@ -197,6 +198,7 @@ exports = module.exports = {
 					.exec(function(err, result) {
 						test.ok(!err);
 						test.eq(user.pw, result[0].pw);
+						test.eq(profile.married, !!result[0].married);
 						test.done();
 					});
 			});
@@ -260,6 +262,7 @@ exports = module.exports = {
 			var profile = orm.Profile.create({
 				name: 'u4',
 				age: 20,
+				married: true,
 				User: user
 			});
 
@@ -306,6 +309,7 @@ exports = module.exports = {
 		var profile = orm.Profile.create({
 			name: 'u6',
 			age: 20,
+			married: false,
 			User: user
 		});
 

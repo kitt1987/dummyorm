@@ -13,6 +13,9 @@ exports.run = function(ormcache, done) {
 		name: 'age',
 		type: orm.SmallInteger,
 		notNull: true
+	}, {
+		name: 'married',
+		type: orm.Bool,
 	}], {
 		engine: 'Memory',
 		charset: 'utf8',
