@@ -7,7 +7,8 @@ exports.run = function(ormcache, done) {
 		name: 'name',
 		type: orm.String,
 		len: 32,
-		notNull: true
+		notNull: true,
+		unique: true,
 	}, {
 		name: 'age',
 		type: orm.SmallInteger,

@@ -108,7 +108,6 @@ exports = module.exports = {
 				.select($('COUNT(', orm.User.id, ') AS count'))
 				.exec(function(err, result) {
 					test.ok(!err);
-					console.log(util.inspect(result))
 					test.eq(1, result.length);
 					test.lt(0, result[0].count);
 					test.done();
@@ -197,7 +196,6 @@ exports = module.exports = {
 					.join(orm.User, $(orm.Profile.User, '=', orm.User.id))
 					.exec(function(err, result) {
 						test.ok(!err);
-						console.log(util.inspect(result))
 						test.eq(user.pw, result[0].pw);
 						test.done();
 					});
@@ -331,7 +329,7 @@ exports = module.exports = {
 		});
 
 		var profile = orm.Profile.create({
-			name: 'u6',
+			name: 'u9',
 			age: 20,
 			User: user
 		});

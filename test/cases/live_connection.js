@@ -23,7 +23,7 @@ exports = module.exports = {
 		};
 
 		orm.useMemcached({
-			liveConn: new MemCached('192.168.99.102:32773')
+			liveConn: new MemCached('192.168.99.102:32811')
 		});
 
 		// this.redis = new Redis({

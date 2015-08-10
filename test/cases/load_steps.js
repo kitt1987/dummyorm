@@ -21,7 +21,7 @@ module.exports = {
 		};
 
 		orm.useMemcached({
-			server: '192.168.99.102:32773'
+			server: '192.168.99.102:32811'
 		});
 		// this.orm.useRedis({
 		// 	server: '192.168.99.100:32771'
