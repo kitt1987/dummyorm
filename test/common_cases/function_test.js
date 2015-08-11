@@ -136,6 +136,8 @@ exports = module.exports = {
         orm.query(user.schema)
           .where($(orm.User.uid, '=', u2.uid))
           .orderBy(user.schema.id)
+          .limit(1)
+          .offset(0)
           .desc()
           .exec(function(err, result) {
             test.ok(!err);
