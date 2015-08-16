@@ -19,15 +19,10 @@ exports = module.exports = {
         uid: 'unique_name'
       });
       test.eq(user.uid, 'unique_name');
-      user.set({
-        pw: 'password'
-      });
-      test.eq(user.pw, 'password');
+      user.pw = 'password';
       orm.save('some_key', user, function(err) {
         test.nothing(err);
-        user.set({
-          pw: 'new_password'
-        });
+        user.pw = 'new_password';
         orm.update('some_key', user, function(err) {
           test.nothing(err);
           test.eq(user.pw, 'new_password');
@@ -39,16 +34,16 @@ exports = module.exports = {
       });
     });
   },
-  updater: function(test) {
-    var orm = test.ctx.orm;
-    orm.updater(orm.User)
-      .set(orm.User.uid, 'just_updated')
-      .set(orm.User.pw, 'also_just_updated')
-      .exec(function(err, result) {
-        test.nothing(err);
-        test.done();
-      });
-  },
+  // updater: function(test) {
+  //   var orm = test.ctx.orm;
+  //   orm.updater(orm.User)
+  //     .set(orm.User.uid, 'just_updated')
+  //     .set(orm.User.pw, 'also_just_updated')
+  //     .exec(function(err, result) {
+  //       test.nothing(err);
+  //       test.done();
+  //     });
+  // },
   simpleQuery: function(test) {
     var orm = test.ctx.orm;
     var user = orm.User.create({
@@ -75,25 +70,25 @@ exports = module.exports = {
       });
     });
   },
-  queryColumns: function(test) {
-    var orm = test.ctx.orm;
-    var self = this;
-    var user = orm.User.create({
-      uid: 'new_name',
-      pw: 'new_password'
-    });
-
-    orm.save('key', user, function(err) {
-      test.ok(!err);
-      orm.query()
-        .select(orm.User.id, orm.User.pw)
-        .exec(function(err, result) {
-          test.ok(!err);
-          test.eq(2, _.keys(result[0]).length);
-          test.done();
-        });
-    });
-  },
+  // queryColumns: function(test) {
+  //   var orm = test.ctx.orm;
+  //   var self = this;
+  //   var user = orm.User.create({
+  //     uid: 'new_name',
+  //     pw: 'new_password'
+  //   });
+  //
+  //   orm.save('key', user, function(err) {
+  //     test.ok(!err);
+  //     orm.query()
+  //       .select(orm.User.id, orm.User.pw)
+  //       .exec(function(err, result) {
+  //         test.ok(!err);
+  //         test.eq(2, _.keys(result[0]).length);
+  //         test.done();
+  //       });
+  //   });
+  // },
   queryCount: function(test) {
     var orm = test.ctx.orm;
     var self = this;
@@ -105,11 +100,10 @@ exports = module.exports = {
     orm.save('key', user, function(err) {
       test.ok(!err);
       orm.query(orm.User)
-        .select($('COUNT(', orm.User.id, ') AS count'))
+        .count()
         .exec(function(err, result) {
           test.ok(!err);
-          test.eq(1, result.length);
-          test.lt(0, result[0].count);
+          test.lt(0, result);
           test.done();
         });
     });
@@ -187,7 +181,7 @@ exports = module.exports = {
     orm.save('key', user, function(err) {
       test.ok(!err);
       var profile = orm.Profile.create({
-        User: user.id,
+        User: user,
         name: 'xxxx',
         married: true,
         age: 12,
@@ -196,11 +190,10 @@ exports = module.exports = {
       orm.save('', profile, function(err) {
         test.ok(!err);
         orm.query(orm.Profile)
-          .join(orm.User, $(orm.Profile.User, '=', orm.User.id))
+          .join(orm.User)
           .exec(function(err, result) {
             test.ok(!err);
-            console.log(result[0]);
-            test.eq(user.pw, result[0].pw);
+            test.eq(user.pw, result[0].User.pw);
             test.eq(profile.married, !!result[0].married);
             test.done();
           });
