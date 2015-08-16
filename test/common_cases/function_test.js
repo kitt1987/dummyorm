@@ -199,6 +199,7 @@ exports = module.exports = {
           .join(orm.User, $(orm.Profile.User, '=', orm.User.id))
           .exec(function(err, result) {
             test.ok(!err);
+            console.log(result[0]);
             test.eq(user.pw, result[0].pw);
             test.eq(profile.married, !!result[0].married);
             test.done();

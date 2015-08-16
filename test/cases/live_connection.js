@@ -23,7 +23,7 @@ exports = module.exports = {
 		};
 
 		orm.useMemcached({
-			liveConn: new MemCached('192.168.99.102:32811')
+			liveConn: new MemCached('192.168.99.102:32769')
 		});
 
 		// this.redis = new Redis({
@@ -43,6 +43,7 @@ exports = module.exports = {
 			acquireTimeout: 1000,
 			connectionLimit: 2,
 			queueLimit: 256,
+			debug: true
 		});
 
 		mysqlConn.connect(function(err) {
