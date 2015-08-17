@@ -191,7 +191,7 @@ exports = module.exports = {
       });
     });
   },
-  join: function(test) {
+  omitJoin: function(test) {
     var orm = test.ctx.orm;
     var self = this;
     var user = orm.User.create({
@@ -211,7 +211,6 @@ exports = module.exports = {
       orm.save('', profile, function(err) {
         test.ok(!err);
         orm.query(orm.Profile)
-          .join(orm.User)
           .exec(function(err, result) {
             test.ok(!err);
             test.eq(user.pw, result[0].User.pw);
