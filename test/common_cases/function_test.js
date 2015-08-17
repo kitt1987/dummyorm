@@ -89,6 +89,27 @@ exports = module.exports = {
   //       });
   //   });
   // },
+  removeSomeFields: function(test) {
+    var orm = test.ctx.orm;
+    var user = orm.User.create({
+      uid: 'new_name123',
+      pw: 'new_password'
+    });
+    orm.save('', user, function(err) {
+      test.nothing(err);
+      user.pw = null;
+      orm.update('', user, function(err) {
+        test.nothing(err);
+        orm.query(orm.User)
+          .where($(orm.User.id, '=', user.id))
+          .exec(function(err, result) {
+            test.ok(!err);
+            test.eq(result[0].pw, '');
+            test.done();
+          });
+      });
+    });
+  },
   queryCount: function(test) {
     var orm = test.ctx.orm;
     var self = this;
@@ -218,9 +239,8 @@ exports = module.exports = {
         return;
       }
 
-      orm.get(keygen(user), function(err, r) {
+      orm.get(keygen(user), function(err, obj) {
         test.nothing(err);
-        var obj = JSON.parse(r);
         test.eq(user.uid, obj.uid);
         test.eq(user.pw, obj.pw);
         test.done();
@@ -237,13 +257,22 @@ exports = module.exports = {
       fc.count = 0;
     }
 
-    orm.keepSimple('umh#FC#13323333333', fc, function(err) {
+    orm.keep('umh#FC#13323333333', fc, function(err) {
       t.nothing(err);
-      orm.keepSimple('umh#FC#::ffff:127.0.0.1', fc, function(err) {
+      orm.keep('umh#FC#::ffff:127.0.0.1', fc, function(err) {
         t.nothing(err);
-        t.done();
+        orm.get(['umh#FC#13323333333', 'umh#FC#::ffff:127.0.0.1'], function(err, obj) {
+          t.nothing(err);
+          t.ok(obj['umh#FC#13323333333']);
+          t.ok(obj['umh#FC#::ffff:127.0.0.1']);
+          t.eq(obj['umh#FC#13323333333'].lastTs, fc.lastTs);
+          t.eq(obj['umh#FC#13323333333'].count, fc.count);
+          t.eq(obj['umh#FC#::ffff:127.0.0.1'].lastTs, fc.lastTs);
+          t.eq(obj['umh#FC#::ffff:127.0.0.1'].count, fc.count);
+          t.done();
+        });
       });
-    });
+    }, 10);
 
   },
   referToFK: function(t) {
