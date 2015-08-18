@@ -22,5 +22,10 @@ exports.run = function(ormcache, done) {
 	});
 
 	Profile.referTo(ormcache.User);
+	Profile.buildIndex({
+		name: 'iProfileUser',
+		column: [Profile.User],
+	});
+
 	done();
 }
