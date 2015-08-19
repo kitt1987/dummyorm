@@ -181,7 +181,7 @@ exports = module.exports = {
         orm.query(user.schema)
           .where($(orm.User.uid, '=', u2.uid, 'AND',
             orm.User.pw, '=', u2.pw))
-          .cacheAs('sth#U2')
+          .cacheSingle('sth#U2')
           .exec(function(err, result) {
             test.ok(!err);
             test.eq(1, result.length);
@@ -212,6 +212,7 @@ exports = module.exports = {
       orm.save('', profile, function(err) {
         test.ok(!err);
         orm.query(orm.Profile)
+          .cacheArray('sth#U3')
           .exec(function(err, result) {
             test.ok(!err);
             test.eq(user.pw, result[0].User.pw);
