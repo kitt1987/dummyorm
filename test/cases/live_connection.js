@@ -40,6 +40,7 @@ exports = module.exports = {
 			port: 32768,
 			user: 'root',
 			password: '0000',
+			supportBigNumbers: true,
 			connectTimeout: 1000,
 			acquireTimeout: 1000,
 			connectionLimit: 2,
