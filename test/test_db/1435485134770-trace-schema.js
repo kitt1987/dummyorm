@@ -1,5 +1,5 @@
 'use strict';
-var orm = require('ormcache.js');
+var orm = require('../..');
 exports = module.exports = {};
 exports.lastStep = '1435482913491-add-foreign-key.js';
 exports.run = function(ormcache, done) {
