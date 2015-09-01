@@ -1,6 +1,6 @@
 {
   "name": "ormcache.js",
-  "version": "0.1.34",
+  "version": "0.1.35",
   "description": "ORM for umhelper",
   "bin": {
     "ocddl": "bin/ddl.js"
