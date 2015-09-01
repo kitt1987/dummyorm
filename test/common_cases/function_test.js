@@ -70,6 +70,25 @@ exports = module.exports = {
       });
     });
   },
+  appendAndPrepend: function(test) {
+    var orm = test.ctx.orm;
+    var array = [1, 2, 3, 4];
+    var key = 'preapArray';
+    orm.saveArray(key, array, function(err) {
+      test.nothing(err);
+      orm.appendArray(key, 5, function(err) {
+        test.nothing(err);
+        orm.prependArray(key, 0, function(err) {
+          test.nothing(err);
+          orm.getArray(key, function(err, data) {
+            test.nothing(err);
+            test.ok(Array.isArray(data));
+            test.done();
+          });
+        });
+      });
+    });
+  },
   // queryColumns: function(test) {
   //   var orm = test.ctx.orm;
   //   var self = this;
