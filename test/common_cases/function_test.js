@@ -72,7 +72,7 @@ exports = module.exports = {
   },
   appendAndPrepend: function(test) {
     var orm = test.ctx.orm;
-    var array = [1, 2, 3, 4];
+    var array = [1];
     var key = 'preapArray';
     orm.saveArray(key, array, function(err) {
       test.nothing(err);
