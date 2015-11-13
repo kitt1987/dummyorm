@@ -13,9 +13,9 @@ exports.run = function(ormcache, done) {
 		type: orm.String,
 		len: 36,
 		notNull: true
-	}], {
-		engine: 'Memory'
-	});
+	}]);
+
+	User.addFullTextColumn('pw');
 
 	done();
 }

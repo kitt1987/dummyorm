@@ -10,7 +10,7 @@ var MemCached = require('memcached');
 var winston = require('winston');
 
 exports = module.exports = {
-	setUp: function(__) {
+	before: function(__) {
 		var stepBox = path.join(process.cwd(), './test/test_db');
 		var orm = ormhelper({
 			tag: 'live_conn',
@@ -45,6 +45,7 @@ exports = module.exports = {
 			acquireTimeout: 1000,
 			connectionLimit: 2,
 			queueLimit: 256,
+			// debug: true,
 		});
 
 		mysqlConn.connect(function(err) {
@@ -66,7 +67,7 @@ exports = module.exports = {
 			});
 		});
 	},
-	tearDown: function(__) {
+	after: function(__) {
 		var orm = __.ctx.orm;
 		var done = [];
 		done.push(orm.dropDB.bind(orm, 'test_db'));

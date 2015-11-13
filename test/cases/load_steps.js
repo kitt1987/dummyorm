@@ -8,7 +8,7 @@ var _ = require('lodash');
 var util = require('util');
 
 module.exports = {
-	setUp: function(t) {
+	before: function(t) {
 		var stepBox = path.join(process.cwd(), './test/test_db');
 
 		var orm = ormhelper({
@@ -50,7 +50,7 @@ module.exports = {
 				});
 			});
 	},
-	tearDown: function(t) {
+	after: function(t) {
 		var orm = t.ctx.orm;
 		var done = [];
 		done.push(orm.dropDB.bind(orm, 'test_db'));

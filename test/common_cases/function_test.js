@@ -129,25 +129,25 @@ exports = module.exports = {
       });
     });
   },
-  queryCount: function(test) {
-    var orm = test.ctx.orm;
-    var self = this;
-    var user = orm.User.create({
-      uid: 'new_name',
-      pw: 'new_password'
-    });
-
-    orm.save('key', user, function(err) {
-      test.ok(!err);
-      orm.query(orm.User)
-        .count()
-        .exec(function(err, result) {
-          test.ok(!err);
-          test.lt(0, result);
-          test.done();
-        });
-    });
-  },
+  // queryCount: function(test) {
+  //   var orm = test.ctx.orm;
+  //   var self = this;
+  //   var user = orm.User.create({
+  //     uid: 'new_name',
+  //     pw: 'new_password'
+  //   });
+  //
+  //   orm.save('key', user, function(err) {
+  //     test.ok(!err);
+  //     orm.query(orm.User)
+  //       .count()
+  //       .exec(function(err, result) {
+  //         test.ok(!err);
+  //         test.lt(0, result);
+  //         test.done();
+  //       });
+  //   });
+  // },
   simpleCondition: function(test) {
     var orm = test.ctx.orm;
     var user = orm.User.create({
@@ -241,6 +241,26 @@ exports = module.exports = {
       });
     });
   },
+  // fullTextQuery: function(test) {
+  //   var orm = test.ctx.orm;
+  //   var self = this;
+  //   var user = orm.User.create({
+  //     uid: 'new_name',
+  //     pw: 'new_password'
+  //   });
+  //
+  //   orm.save('key', user, function(err) {
+  //     test.ok(!err);
+  //     orm.query(orm.User)
+  //       .where($('MATCH (', orm.User.pw, ')', "AGAINST ('*password*' IN BOOLEAN MODE)"))
+  //       .exec(function(err, result) {
+  //         test.ok(!err);
+  //         console.log(result);
+  //         test.eq(user.pw, result[0].pw);
+  //         test.done();
+  //       });
+  //   });
+  // },
   getCache: function(test) {
     var orm = test.ctx.orm;
     var user = orm.User.create({
@@ -317,33 +337,33 @@ exports = module.exports = {
       });
     });
   },
-  many2many: function(t) {
-    var orm = t.ctx.orm;
-    var user = orm.User.create({
-      uid: 'u5',
-      pw: 'pssssssssss'
-    });
-
-    orm.save('u5pssssssss', user, function(err) {
-      t.nothing(err);
-      var trace = orm.Trace.create({
-        trace: 'ttttttttttrace'
-      });
-
-      orm.save('traceU5', trace, function(err) {
-        t.nothing(err);
-        var m = orm.UserM2MTrace.create({
-          User: user,
-          Trace: trace
-        });
-
-        orm.save('', m, function(err) {
-          t.nothing(err);
-          t.done();
-        })
-      });
-    });
-  },
+  // many2many: function(t) {
+  //   var orm = t.ctx.orm;
+  //   var user = orm.User.create({
+  //     uid: 'u5',
+  //     pw: 'pssssssssss'
+  //   });
+  //
+  //   orm.save('u5pssssssss', user, function(err) {
+  //     t.nothing(err);
+  //     var trace = orm.Trace.create({
+  //       trace: 'ttttttttttrace'
+  //     });
+  //
+  //     orm.save('traceU5', trace, function(err) {
+  //       t.nothing(err);
+  //       var m = orm.UserM2MTrace.create({
+  //         User: user,
+  //         Trace: trace
+  //       });
+  //
+  //       orm.save('', m, function(err) {
+  //         t.nothing(err);
+  //         t.done();
+  //       })
+  //     });
+  //   });
+  // },
   transaction: function(t) {
     var orm = t.ctx.orm;
     var user = orm.User.create({
