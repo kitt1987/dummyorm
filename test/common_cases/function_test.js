@@ -162,7 +162,7 @@ exports = module.exports = {
 
     var keygen = function(user) {
       return 'xxxx' + user.id;
-    }
+    };
 
     orm.save(keygen, user, function(err) {
       test.nothing(err);
@@ -270,7 +270,7 @@ exports = module.exports = {
 
     var keygen = function(user) {
       return 'xxxx' + user.id;
-    }
+    };
 
     orm.save(keygen, user, function(err) {
       test.nothing(err);
@@ -337,6 +337,45 @@ exports = module.exports = {
       });
     });
   },
+
+  jsonData: function(t) {
+    var orm = t.ctx.orm;
+    var user = orm.User.create({
+      name: 'u5',
+      pw: 'pssssssssss',
+    });
+
+    var chars = {
+      a: 'a',
+      b: 1,
+      c: [
+        1, 2, 3
+      ]
+    };
+
+    orm.save('u4pssssssss', user, function(err) {
+      t.nothing(err);
+      var profile = orm.Profile.create({
+        name: 'u5',
+        age: 20,
+        married: true,
+        User: user,
+        chars
+      });
+
+      orm.save('profileu4', profile, function(err) {
+        t.nothing(err);
+        orm.query(orm.Profile)
+          .where($(orm.Profile.name, '=', 'u5'))
+          .exec((err, result) => {
+            t.nothing(err);
+            t.eq(chars.a, result[0].chars.a);
+            t.eq(chars.b, result[0].chars.b);
+            t.done();
+          });
+      });
+    });
+  },
   // many2many: function(t) {
   //   var orm = t.ctx.orm;
   //   var user = orm.User.create({
@@ -380,7 +419,7 @@ exports = module.exports = {
 
     var keygen = function(user) {
       return 'xxxx' + user.id;
-    }
+    };
 
     var trans = orm.transaction();
     trans.save(keygen, user)
@@ -405,7 +444,7 @@ exports = module.exports = {
 
     var keygen = function(user) {
       return 'xxxx' + user.id;
-    }
+    };
 
     var trans = orm.transaction();
     trans.save(keygen, user)
@@ -422,4 +461,4 @@ exports = module.exports = {
       t.done();
     });
   },
-}
+};

@@ -23,7 +23,7 @@ exports = module.exports = {
 		};
 
 		orm.useMemcached({
-			liveConn: new MemCached('192.168.99.102:32769'),
+			liveConn: new MemCached('192.168.99.103:32769'),
 			objLifeTime: 5,
 		});
 
@@ -36,7 +36,7 @@ exports = module.exports = {
 		// });
 
 		var mysqlConn = mysql.createConnection({
-			host: '192.168.99.102',
+			host: '192.168.99.103',
 			port: 32768,
 			user: 'root',
 			password: '0000',
