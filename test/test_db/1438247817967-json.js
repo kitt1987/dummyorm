@@ -6,8 +6,7 @@ exports.run = function(ormcache, done) {
 	ormcache.Profile.addColumn([
 		{
 			name: 'chars',
-			type: orm.JSON,
-			len: 30
+			type: orm.JSON
 		},
 	]);
 
