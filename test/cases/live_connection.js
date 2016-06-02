@@ -1,80 +1,57 @@
 'use strict';
 
-var $ = require('../../lib/dml/condition').$;
-var ormhelper = require('../../');
+var ORM = require('../../');
 var path = require('path');
-var async = require('async');
-var mysql = require('mysql');
-var Redis = require('ioredis');
-var MemCached = require('memcached');
-var winston = require('winston');
+var mysql = require('mysql2');
 
 exports = module.exports = {
-	before: function(__) {
-		var stepBox = path.join(process.cwd(), './test/test_db');
-		var orm = ormhelper({
-			tag: 'live_conn',
-			logger: winston
-		});
+  before: function(__) {
+    var mysqlConn = mysql.createConnection({
+      host: 'localhost',
+      port: 32768,
+      user: 'root',
+      password: '0000',
+      supportBigNumbers: true,
+      connectTimeout: 1000,
+      acquireTimeout: 1000,
+      connectionLimit: 2,
+      queueLimit: 256,
+      // debug: true,
+    });
 
-		__.ctx = {
-			stepBox: stepBox,
-			orm: orm
-		};
+    mysqlConn.connect((err) => {
+      if (err) throw err;
 
-		orm.useMemcached({
-			liveConn: new MemCached('192.168.99.103:32769'),
-			objLifeTime: 5,
-		});
+      var stepBox = path.join(process.cwd(), './test/test_db');
+      var orm = new ORM({
+        tag: 'live_conn',
+        db: 'test_db',
+        stepPath: stepBox,
+        connection: {
+          liveConn: mysqlConn
+        }
+      });
 
-		// this.redis = new Redis({
-		// 	host: '192.168.99.100',
-		// 	port: 32771
-		// });
-		// orm.useRedis({
-		// 	liveConn: this.redis
-		// });
+      __.ctx = {
+        stepBox: stepBox,
+        orm: orm
+      };
 
-		var mysqlConn = mysql.createConnection({
-			host: '192.168.99.103',
-			port: 32768,
-			user: 'root',
-			password: '0000',
-			supportBigNumbers: true,
-			connectTimeout: 1000,
-			acquireTimeout: 1000,
-			connectionLimit: 2,
-			queueLimit: 256,
-			// debug: true,
-		});
+      orm.connect()
+        .then(() => __.done())
+    });
+  },
+  after: function(__) {
+    if (!__.ctx) {
+      __.done();
+      return;
+    }
 
-		mysqlConn.connect(function(err) {
-			if (err)
-				throw err;
-			orm.useMysql({
-				liveConn: mysqlConn
-			}, function(err) {
-				if (err) {
-					throw err;
-				}
-
-				orm.loadSteps(stepBox, 'test_db', function(err) {
-					if (err)
-						throw err;
-
-					__.done();
-				});
-			});
-		});
-	},
-	after: function(__) {
-		var orm = __.ctx.orm;
-		var done = [];
-		done.push(orm.dropDB.bind(orm, 'test_db'));
-		done.push(orm.disconnect.bind(orm));
-		async.series(done, function() {
-			__.done();
-		});
-	},
-	functions: require('../common_cases/function_test')
+    var orm = __.ctx.orm;
+    var done = [];
+    // done.push(orm.dropDB.bind(orm, 'test_db'));
+    done.push(orm.disconnect.bind(orm));
+    __.done();
+  },
+  functions: require('../common_cases/function_test')
 };

@@ -8,46 +8,24 @@ var util = require('util');
 var _ = require('lodash');
 var colors = require('colors');
 
-const stepRunner = function(ormcache) {
+const template = `'use strict';
+const lastStep = '%s';
+function run(orm) {
   // FIXME create or modify schema here.
-  // You could access each schema by calling ormcache[schemaTalbeName].
-};
-
-function StepScript() {
-  this.strict = '\'use strict\';';
-  this.required = [];
-  this.methods = [];
+  // You can access each schema by calling orm.schema[schemaTalbeName].
+  // And get datatypes orm supported by calling orm.DataType[typeName].
 }
 
-StepScript.prototype.addRequired = function(varname, path) {
-  this.required.push(util.format('var %s = require(\'%s\');', varname, path));
+module.exports = {
+  lastStep,
+  run,
 };
-
-StepScript.prototype.addMember = function(name, func) {
-  if (typeof func === 'function') func = func.toString();
-  var v = util.format('exports.%s = %s', name, func);
-  this.methods.push(v);
-};
-
-StepScript.prototype.setExported = function() {
-  this.exported = 'exports = module.exports = {};';
-};
-
-StepScript.prototype.text = function() {
-  var all = _.flattenDeep([
-    this.strict, this.required, this.exported, this.methods
-  ]);
-  return all.reduce((line1, line2) => {
-    if (line1) {
-      return line1 + '\n' + line2;
-    } else {
-      return line2;
-    }
-  });
-};
+`;
 
 function readSteps(database) {
-  return fs.readdirSync(database).filter((s) => s[0] !== '.');
+  return fs.readdirSync(database).filter(
+    (s) => s[0] !== '.' && s.endsWith('.js')
+  );
 }
 
 function calcStep(database) {
@@ -55,12 +33,7 @@ function calcStep(database) {
   var last_step = '';
   if (steps.length > 0) last_step = steps[steps.length - 1];
 
-  var ss = new StepScript();
-  ss.addRequired('orm', 'ormcache.js');
-  ss.setExported();
-  ss.addMember('lastStep', '\'' + last_step + '\'');
-  ss.addMember('run', stepRunner);
-  return ss.text();
+  return util.format(template, last_step);
 }
 
 function error(t) {
@@ -160,10 +133,11 @@ function validate(dirs) {
     var steps = readSteps(dir);
     if (steps.length === 0) return;
 
+    var modulePath = path.relative(path.dirname(module.filename), dir);
+
     steps.reduce((lastStep, step) => {
       var stepPath = path.join(dir, step);
-      var modulePath = path.relative(path.dirname(module.filename), stepPath);
-      var stepModule = require(modulePath);
+      var stepModule = require(path.join(modulePath, step));
       if (lastStep !== stepModule.lastStep)
         throw new Error('lastStep of ' + stepPath + ' should be ' + lastStep);
 

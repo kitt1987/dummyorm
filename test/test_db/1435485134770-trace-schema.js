@@ -1,11 +1,10 @@
 'use strict';
-var orm = require('../..');
 exports = module.exports = {};
 exports.lastStep = '1435482913491-add-foreign-key.js';
-exports.run = function(ormcache) {
-  ormcache.define('Trace', {
+exports.run = function(orm) {
+  orm.define('Trace', {
     name: 'trace',
-    type: orm.String,
+    type: orm.DataType.String,
     len: 255,
     notNull: true
   }, {

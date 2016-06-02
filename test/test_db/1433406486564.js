@@ -1,16 +1,15 @@
 'use strict'
-var orm = require('../..');
 exports = module.exports = {}
 exports.lastStep = '';
-exports.run = function(ormcache) {
-  var User = ormcache.define('User', [{
+exports.run = function(orm) {
+  var User = orm.define('User', [{
     name: 'uid',
-    type: orm.String,
+    type: orm.DataType.String,
     len: 36,
     notNull: true
   }, {
     name: 'pw',
-    type: orm.String,
+    type: orm.DataType.String,
     len: 36,
     notNull: true
   }]);
