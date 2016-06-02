@@ -26,7 +26,7 @@ exports = module.exports = {
       var orm = new ORM({
         tag: 'live_conn',
         db: 'test_db',
-        stepPath: stepBox,
+        schemaPath: stepBox,
         connection: {
           liveConn: mysqlConn
         }
