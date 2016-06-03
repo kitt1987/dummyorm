@@ -8,7 +8,7 @@ exports = module.exports = {
       uid: 'unique_name'
     });
     test.eq(user.uid, 'unique_name');
-    user.pw = 'password';
+    user.pw = 'pass\'word';
     User.save(user)
       .then((userUpdated) => {
         test.eq(user, userUpdated);
@@ -28,7 +28,7 @@ exports = module.exports = {
     var User = orm.schema.User;
     var user = User.create({
       uid: 'new_name',
-      pw: 'new_password'
+      pw: 'new_pas\,sword'
     });
 
     var u2 = User.create({
