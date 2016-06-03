@@ -5,4 +5,4 @@ exports.run = function(orm) {
   var Profile = orm.schema.Profile;
   var User = orm.schema.User;
   Profile.dropRelation(User);
-}
+};

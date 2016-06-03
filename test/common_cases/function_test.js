@@ -1,93 +1,52 @@
 'use strict';
 
-var fs = require('fs');
-var util = require('util');
-var _ = require('lodash');
-var $ = require('../..').$;
-
 exports = module.exports = {
   loading: function(test) {
     var orm = test.ctx.orm;
-    var stepBox = test.ctx.stepBox;
-    orm.currentStep(function(err, step) {
-      test.nothing(err);
-      test.ok(orm.Profile.address);
-      test.ok(orm.Profile.pno);
-      var steps = fs.readdirSync(stepBox);
-      test.eq(step, parseInt(steps[steps.length - 1].slice(0, 13)));
-      var user = orm.User.create({
-        uid: 'unique_name'
-      });
-      test.eq(user.uid, 'unique_name');
-      user.pw = 'password';
-      orm.save('some_key', user, function(err) {
-        test.nothing(err);
-        user.pw = 'new_password';
-        orm.update('some_key', user, function(err) {
-          test.nothing(err);
-          test.eq(user.pw, 'new_password');
-          orm.del('some_key', user, function(err) {
-            test.nothing(err);
-            test.done();
-          });
-        });
-      });
+    var User = orm.schema.User;
+    var user = User.create({
+      uid: 'unique_name'
     });
+    test.eq(user.uid, 'unique_name');
+    user.pw = 'password';
+    User.save(user)
+      .then((userUpdated) => {
+        test.eq(user, userUpdated);
+        user.pw = 'new_password';
+        return User.update(user);
+      })
+      .then((userUpdated) => {
+        test.eq(user, userUpdated);
+        test.eq(user.pw, 'new_password');
+        return User.del(user);
+      })
+      .then(() => test.done())
+      .catch((err) => test.nothing(err));
   },
-  // updater: function(test) {
-  //   var orm = test.ctx.orm;
-  //   orm.updater(orm.User)
-  //     .set(orm.User.uid, 'just_updated')
-  //     .set(orm.User.pw, 'also_just_updated')
-  //     .exec(function(err, result) {
-  //       test.nothing(err);
-  //       test.done();
-  //     });
-  // },
   simpleQuery: function(test) {
     var orm = test.ctx.orm;
-    var user = orm.User.create({
+    var User = orm.schema.User;
+    var user = User.create({
       uid: 'new_name',
       pw: 'new_password'
     });
 
-    var u2 = orm.User.create({
+    var u2 = User.create({
       uid: 'u2',
       pw: 'u2_password'
     });
 
-    orm.save('key', user, function(err) {
-      test.nothing(err);
-      orm.save('u2', u2, function(err) {
-        orm.query(user.schema).exec(function(err, result) {
-          test.nothing(err);
-          test.eq(2, result.length);
-          var numCols1 = _.keys(result[0]).length;
-          var numCols2 = _.keys(result[1]).length;
-          test.eq(numCols1, numCols2);
-          test.done();
-        });
-      });
-    });
-  },
-  appendAndPrepend: function(test) {
-    var orm = test.ctx.orm;
-    var array = [1];
-    var key = 'preapArray';
-    orm.saveArray(key, array, function(err) {
-      test.nothing(err);
-      orm.appendArray(key, 5, function(err) {
-        test.nothing(err);
-        orm.prependArray(key, 0, function(err) {
-          test.nothing(err);
-          orm.getArray(key, function(err, data) {
-            test.nothing(err);
-            test.ok(Array.isArray(data));
-            test.done();
-          });
-        });
-      });
-    });
+    User.save(user)
+      .then(() => User.save(u2))
+      .then(() => User.query().exec())
+      .then((result) => {
+        test.eq(2, result.length);
+        var numCols1 = Object.keys(result[0]).length;
+        var numCols2 = Object.keys(result[1]).length;
+        test.eq(numCols1, numCols2);
+        test.done();
+      })
+      .catch((err) => test.nothing(err));
   },
   // queryColumns: function(test) {
   //   var orm = test.ctx.orm;
@@ -110,24 +69,24 @@ exports = module.exports = {
   // },
   removeSomeFields: function(test) {
     var orm = test.ctx.orm;
-    var user = orm.User.create({
+    var User = orm.schema.User;
+    var user = User.create({
       uid: 'new_name123',
       pw: 'new_password'
     });
-    orm.save('', user, function(err) {
-      test.nothing(err);
-      user.pw = null;
-      orm.update('', user, function(err) {
-        test.nothing(err);
-        orm.query(orm.User)
-          .where($(orm.User.id, '=', user.id))
-          .exec(function(err, result) {
-            test.ok(!err);
-            test.eq(result[0].pw, '');
-            test.done();
-          });
-      });
-    });
+    User.save(user)
+      .then((userUpdated) => {
+        user.pw = null;
+        return User.update(user);
+      })
+      .then((userUpdated) => {
+        return User.query().where(User.id, '=', user.id).exec();
+      })
+      .then((result) => {
+        test.eq(result[0].pw, '');
+        test.done();
+      })
+      .catch((err) => test.nothing(err));
   },
   // queryCount: function(test) {
   //   var orm = test.ctx.orm;
@@ -150,96 +109,94 @@ exports = module.exports = {
   // },
   simpleCondition: function(test) {
     var orm = test.ctx.orm;
-    var user = orm.User.create({
+    var User = orm.schema.User;
+    var user = User.create({
       uid: 'new_name',
       pw: 'new_password'
     });
 
-    var u2 = orm.User.create({
+    var u2 = User.create({
       uid: 'u3',
       pw: 'u2_password'
     });
 
-    var keygen = function(user) {
-      return 'xxxx' + user.id;
-    };
-
-    orm.save(keygen, user, function(err) {
-      test.nothing(err);
-      orm.save(keygen, u2, function(err) {
-        orm.query(user.schema)
-          .where($(orm.User.uid, '=', u2.uid))
-          .orderBy(user.schema.id)
+    User.save(user)
+      .then(() => User.save(u2))
+      .then(() => {
+        return User.query().where(User.uid, '=', u2.uid)
+          .orderBy(User.id)
           .limit(1)
           .offset(0)
           .desc()
-          .exec(function(err, result) {
-            test.ok(!err);
-            test.eq(1, result.length);
-            test.eq(u2.uid, result[0].uid);
-            test.done();
-          });
-      });
-    });
+          .exec();
+      })
+      .then((result) => {
+        test.eq(1, result.length);
+        test.eq(u2.uid, result[0].uid);
+        test.done();
+      })
+      .catch((err) => test.nothing(err));
   },
   logicCondition: function(test) {
     var orm = test.ctx.orm;
-    var user = orm.User.create({
+    var User = orm.schema.User;
+    var user = User.create({
       uid: 'u2',
       pw: 'password'
     });
 
-    var u2 = orm.User.create({
+    var u2 = User.create({
       uid: 'u2',
       pw: 'new_password'
     });
 
-    orm.save('key', user, function(err) {
-      test.nothing(err);
-      orm.save('u2', u2, function(err) {
-        orm.query(user.schema)
-          .where($(orm.User.uid, '=', u2.uid, 'AND',
-            orm.User.pw, '=', u2.pw))
-          .cacheSingle('sth#U2')
-          .exec(function(err, result) {
-            test.ok(!err);
-            test.eq(1, result.length);
-            test.eq(u2.uid, result[0].uid);
-            test.eq(u2.pw, result[0].pw);
-            test.done();
-          });
-      });
-    });
+    User.save(user)
+      .then(() => User.save(u2))
+      .then(() => {
+        return User.query()
+          .where(User.uid, '=', u2.uid, 'AND',
+            User.pw, '=', u2.pw)
+          .exec();
+      })
+      .then((result) => {
+        test.eq(1, result.length);
+        test.eq(u2.uid, result[0].uid);
+        test.eq(u2.pw, result[0].pw);
+        test.done();
+      })
+      .catch((err) => test.nothing(err));
   },
   omitJoin: function(test) {
     var orm = test.ctx.orm;
-    var self = this;
-    var user = orm.User.create({
+    var {
+      User,
+      Profile
+    } = orm.schema;
+    var user = User.create({
       uid: 'new_name',
       pw: 'new_password'
     });
 
-    orm.save('key', user, function(err) {
-      test.ok(!err);
-      var profile = orm.Profile.create({
-        User: user,
-        name: 'xxxx',
-        married: true,
-        age: 12,
-      });
-
-      orm.save('', profile, function(err) {
-        test.ok(!err);
-        orm.query(orm.Profile)
-          .cacheArray('sth#U3')
-          .exec(function(err, result) {
-            test.ok(!err);
-            test.eq(user.pw, result[0].User.pw);
-            test.eq(profile.married, !!result[0].married);
-            test.done();
-          });
-      });
+    var profile = Profile.create({
+      User: user,
+      name: 'xxxx',
+      married: true,
+      age: 12,
     });
+
+    User.save(user)
+      .then(() => {
+        return Profile.save(profile);
+      })
+      .then(() => {
+        return Profile.query().exec();
+      })
+      .then((result) => {
+        test.eq(user.pw, result[0].User.pw);
+        test.eq(profile.married, !!result[0].married);
+        test.done();
+      })
+      .catch((err) => test.nothing(err));
   },
   // fullTextQuery: function(test) {
   //   var orm = test.ctx.orm;
@@ -261,86 +218,32 @@ exports = module.exports = {
   //       });
   //   });
   // },
-  getCache: function(test) {
-    var orm = test.ctx.orm;
-    var user = orm.User.create({
-      uid: 'u2',
-      pw: 'password'
-    });
-
-    var keygen = function(user) {
-      return 'xxxx' + user.id;
-    };
-
-    orm.save(keygen, user, function(err) {
-      test.nothing(err);
-      if (!orm.cacheEnabled()) {
-        test.done();
-        return;
-      }
-
-      orm.get(keygen(user), function(err, obj) {
-        test.nothing(err);
-        test.eq(user.uid, obj.uid);
-        test.eq(user.pw, obj.pw);
-        test.done();
-      });
-    });
-  },
-  saveSimpleObj: function(t) {
-    var orm = t.ctx.orm;
-    var fc = fc || {};
-    fc.lastTs = _.now();
-    if (fc.count) {
-      fc.count += 1;
-    } else {
-      fc.count = 0;
-    }
-
-    orm.keep('umh#FC#13323333333', fc, function(err) {
-      t.nothing(err);
-      orm.keep('umh#FC#::ffff:127.0.0.1', fc, function(err) {
-        t.nothing(err);
-        orm.get(['umh#FC#13323333333', 'umh#FC#::ffff:127.0.0.1'], function(err, obj) {
-          t.nothing(err);
-          t.ok(obj['umh#FC#13323333333']);
-          t.ok(obj['umh#FC#::ffff:127.0.0.1']);
-          t.eq(obj['umh#FC#13323333333'].lastTs, fc.lastTs);
-          t.eq(obj['umh#FC#13323333333'].count, fc.count);
-          t.eq(obj['umh#FC#::ffff:127.0.0.1'].lastTs, fc.lastTs);
-          t.eq(obj['umh#FC#::ffff:127.0.0.1'].count, fc.count);
-          t.done();
-        });
-      });
-    }, 10);
-
-  },
   referToFK: function(t) {
     var orm = t.ctx.orm;
-    var user = orm.User.create({
+    var {User, Profile} = orm.schema;
+    var user = User.create({
       uid: 'u4',
       pw: 'pssssssssss'
     });
 
-    orm.save('u4pssssssss', user, function(err) {
-      t.nothing(err);
-      var profile = orm.Profile.create({
-        name: 'u4',
-        age: 20,
-        married: true,
-        User: user
-      });
-
-      orm.save('profileu4', profile, function(err) {
-        t.ok(!err);
-        t.done();
-      });
+    var profile = Profile.create({
+      name: 'u4',
+      age: 20,
+      married: true,
+      User: user
     });
-  },
 
+    User.save(user)
+      .then(() => {
+        return Profile.save(profile);
+      })
+      .then(() => t.done())
+      .catch((err) => t.nothing(err));
+  },
   jsonData: function(t) {
     var orm = t.ctx.orm;
-    var user = orm.User.create({
+    var { User, Profile } = orm.schema;
+    var user = User.create({
       name: 'u5',
       pw: 'pssssssssss',
     });
@@ -353,28 +256,23 @@ exports = module.exports = {
       ]
     };
 
-    orm.save('u4pssssssss', user, function(err) {
-      t.nothing(err);
-      var profile = orm.Profile.create({
-        name: 'u5',
-        age: 20,
-        married: true,
-        User: user,
-        chars
-      });
-
-      orm.save('profileu4', profile, function(err) {
-        t.nothing(err);
-        orm.query(orm.Profile)
-          .where($(orm.Profile.name, '=', 'u5'))
-          .exec((err, result) => {
-            t.nothing(err);
-            t.eq(chars.a, result[0].chars.a);
-            t.eq(chars.b, result[0].chars.b);
-            t.done();
-          });
-      });
+    var profile = Profile.create({
+      name: 'u5',
+      age: 20,
+      married: true,
+      User: user,
+      chars
     });
+
+    User.save(user)
+      .then(() => Profile.save(profile))
+      .then(() => Profile.query().where(Profile.name, '=', 'u5').exec())
+      .then((result) => {
+        t.eq(chars.a, result[0].chars.a);
+        t.eq(chars.b, result[0].chars.b);
+        t.done();
+      })
+      .catch((err) => t.nothing(err));
   },
   // many2many: function(t) {
   //   var orm = t.ctx.orm;
@@ -405,60 +303,45 @@ exports = module.exports = {
   // },
   transaction: function(t) {
     var orm = t.ctx.orm;
-    var user = orm.User.create({
+    var { User, Profile } = orm.schema;
+    var user = User.create({
       uid: 'u6',
       pw: 'pssssssssss'
     });
 
-    var profile = orm.Profile.create({
+    var profile = Profile.create({
       name: 'u6',
       age: 20,
       married: false,
       User: user
     });
 
-    var keygen = function(user) {
-      return 'xxxx' + user.id;
-    };
-
-    var trans = orm.transaction();
-    trans.save(keygen, user)
-      .save(keygen, profile)
-      .exec(function(err) {
-        t.nothing(err);
-        t.done();
-      });
+    User.transaction()
+      .save(User, user)
+      .save(Profile, profile)
+      .exec()
+      .then(() => t.done())
+      .catch((err) => t.nothing(err));
   },
-  transactionAgain: function(t) {
+  transactionFKs: function(t) {
     var orm = t.ctx.orm;
-    var user = orm.User.create({
+    var { User, Profile } = orm.schema;
+    var user = User.create({
       uid: 'u6',
       pw: 'pssssssssss'
     });
 
-    var profile = orm.Profile.create({
+    var profile = Profile.create({
       name: 'u9',
       age: 20,
       User: user
     });
 
-    var keygen = function(user) {
-      return 'xxxx' + user.id;
-    };
-
-    var trans = orm.transaction();
-    trans.save(keygen, user)
-      .save(keygen, profile)
-      .exec(function(err) {
-        t.nothing(err);
-        t.done();
-      });
-  },
-  flushCache: function(t) {
-    var orm = t.ctx.orm;
-    orm.cache.flush(function(err) {
-      t.nothing(err);
-      t.done();
-    });
+    User.transaction()
+      .save(User, user)
+      .save(Profile, profile)
+      .exec()
+      .then(() => t.done())
+      .catch((err) => t.nothing(err));
   },
 };

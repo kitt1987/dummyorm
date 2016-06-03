@@ -35,7 +35,7 @@
     "mysql2": "^0.15.8"
   },
   "devDependencies": {
-    "bestunit.js": "^0.1.1",
+    "bestunit.js": "file:///Users/KH/Documents/js/bestunit.js",
     "winston": "^1.0.1"
   }
 }

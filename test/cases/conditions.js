@@ -1,6 +1,6 @@
 'use strict'
 
-var $ = require('../../lib/dml/condition').$;
+var $ = require('../../lib/schema').$;
 var Column = require('../../lib/schema').Column;
 var Datatype = require('../../lib/ddl/datatype');
 

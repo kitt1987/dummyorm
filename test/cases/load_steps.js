@@ -1,6 +1,5 @@
 'use strict'
 
-var $ = require('../../lib/dml/condition').$;
 var ormhelper = require('../../');
 var path = require('path');
 var async = require('async');
