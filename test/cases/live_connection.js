@@ -39,6 +39,7 @@ exports = module.exports = {
 
       orm.connect()
         .then(() => __.done())
+        .catch((err) => __.nothing(err));
     });
   },
   after: function(__) {
@@ -48,9 +49,8 @@ exports = module.exports = {
     }
 
     var orm = __.ctx.orm;
-    var done = [];
     // done.push(orm.dropDB.bind(orm, 'test_db'));
-    done.push(orm.disconnect.bind(orm));
+    orm.disconnect();
     __.done();
   },
   functions: require('../common_cases/function_test')

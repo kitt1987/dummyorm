@@ -29,6 +29,7 @@
   "dependencies": {
     "argparse": "^1.0.2",
     "async": "^1.4.2",
+    "bestunit.js": "file:///Users/KH/Documents/js/bestunit.js",
     "bluebird": "^3.4.0",
     "colors": "^1.1.2",
     "lodash": "^3.10.1",

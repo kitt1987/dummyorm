@@ -80,7 +80,7 @@ exports = module.exports = {
         return User.update(user);
       })
       .then((userUpdated) => {
-        return User.query().where(User.id, '=', user.id).exec();
+        return User.query(User.id, '=', user.id).exec();
       })
       .then((result) => {
         test.eq(result[0].pw, '');
@@ -123,7 +123,7 @@ exports = module.exports = {
     User.save(user)
       .then(() => User.save(u2))
       .then(() => {
-        return User.query().where(User.uid, '=', u2.uid)
+        return User.query(User.uid, '=', u2.uid)
           .orderBy(User.id)
           .limit(1)
           .offset(0)
@@ -153,8 +153,7 @@ exports = module.exports = {
     User.save(user)
       .then(() => User.save(u2))
       .then(() => {
-        return User.query()
-          .where(User.uid, '=', u2.uid, 'AND',
+        return User.query(User.uid, '=', u2.uid, 'AND',
             User.pw, '=', u2.pw)
           .exec();
       })
@@ -266,7 +265,7 @@ exports = module.exports = {
 
     User.save(user)
       .then(() => Profile.save(profile))
-      .then(() => Profile.query().where(Profile.name, '=', 'u5').exec())
+      .then(() => Profile.query(Profile.name, '=', 'u5').exec())
       .then((result) => {
         t.eq(chars.a, result[0].chars.a);
         t.eq(chars.b, result[0].chars.b);
